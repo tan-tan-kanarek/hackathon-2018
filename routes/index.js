@@ -4,8 +4,6 @@ const fs = require("fs");
 const md5 = require('md5');
 const kaltura = require("kaltura-client");
 const express = require('express');
-var cookieParser = require('cookie-parser');
-
 const router = express.Router();
 
 const {serviceUrl, partnerId, appToken} = JSON.parse(fs.readFileSync("config/kaltura.json"));
@@ -17,128 +15,101 @@ const client = new kaltura.Client(config);
 
 function startWidgetSession() {
 	return new Promise((resolve, reject) => {
-		const widgetId = `_${partnerId}`;
-		kaltura.services.session.startWidgetSession(widgetId)
+			const widgetId = `_${partnerId}`;
+	kaltura.services.session.startWidgetSession(widgetId)
 		.completion((success, response) => {
-			if(success) {
-				resolve(response.ks);
-			}
-			else {
-				reject(response);
-			}
-		})
-		.execute(client);
-	});
+		if(success) {
+			resolve(response.ks);
+		}
+		else {
+			reject(response);
+}
+})
+.execute(client);
+});
 }
 
 function startSession(widgetSession) {
 	return new Promise((resolve, reject) => {
-
-		const tokenHash = md5(widgetSession + appToken.token);
-		kaltura.services.appToken.startSession(appToken.id, tokenHash)
+			const tokenHash = md5(widgetSession + appToken.token);
+	kaltura.services.appToken.startSession(appToken.id, tokenHash)
 		.setKs(widgetSession)
 		.completion((success, response) => {
-			if(success) {
-				resolve(response.ks);
-			}
-			else {
-				reject(response);
-			}
-		})
-		.execute(client);
-	});
+		if(success) {
+			resolve(response.ks);
+		}
+		else {
+			reject(response);
+}
+})
+.execute(client);
+});
 }
 
 function getMetadata(session) {
 	return new Promise((resolve, reject) => {
 
-    	var categoriesFilter = new kaltura.objects.CategoryFilter({
-    		fullNameStartsWith: "Market>",
-    		tagsLike: "department"
-    	});
+			var categoriesFilter = new kaltura.objects.CategoryFilter({
+				fullNameStartsWith: "Market>",
+				tagsLike: "department"
+			});
 
-    	var itemsFilter = new kaltura.objects.CategoryFilter({
-    		fullNameStartsWith: "Market>",
-    		tagsLike: "item"
-    	});
-    	
-    	var thumbnailsFilter = new kaltura.objects.MediaEntryFilter({
-    		tagsLike: "thumb",
-    		statusEqual: kaltura.enums.EntryStatus.NO_CONTENT
-    	});
+	var itemsFilter = new kaltura.objects.CategoryFilter({
+		fullNameStartsWith: "Market>",
+		tagsLike: "item"
+	});
 
-    	var thumbnailsFilterMapping = new kaltura.objects.ResponseProfileMapping({
-    		filterProperty: "categoriesIdsMatchAnd",
-    		parentProperty: "id"
-    	});
-    	
-    	var thumbResponseProfile = new kaltura.objects.DetachedResponseProfile({
-    		name: "thumbs",
-    		filter: thumbnailsFilter,
-    		mappings: [thumbnailsFilterMapping]
-    	});
+	var thumbnailsFilter = new kaltura.objects.MediaEntryFilter({
+		tagsLike: "thumb",
+		statusEqual: kaltura.enums.EntryStatus.NO_CONTENT
+	});
 
-    	var responseProfile = new kaltura.objects.DetachedResponseProfile({
-    		relatedProfiles: [thumbResponseProfile]
-    	});
-    	
-    	kaltura.services.category.listAction(itemsFilter)
-    	.setResponseProfile(responseProfile)
+	var thumbnailsFilterMapping = new kaltura.objects.ResponseProfileMapping({
+		filterProperty: "categoriesIdsMatchAnd",
+		parentProperty: "id"
+	});
+
+	var thumbResponseProfile = new kaltura.objects.DetachedResponseProfile({
+		name: "thumbs",
+		filter: thumbnailsFilter,
+		mappings: [thumbnailsFilterMapping]
+	});
+
+	var responseProfile = new kaltura.objects.DetachedResponseProfile({
+		relatedProfiles: [thumbResponseProfile]
+	});
+
+	kaltura.services.category.listAction(itemsFilter)
+		.setResponseProfile(responseProfile)
 		.add(kaltura.services.category.listAction(categoriesFilter))
 		.setKs(session)
 		.completion((success, response) => {
-			if(success) {
-				resolve({
-					session: session, 
-					items: response[0].objects, 
-					categories: response[1].objects
-				});
-			}
-			else {
-				reject(response);
-			}
-		})
-		.execute(client);
-	});
+		if(success) {
+			resolve({
+				session: session,
+				items: response[0].objects,
+				categories: response[1].objects
+			});
+		}
+		else {
+			reject(response);
 }
-
-
-function saveSession(session) {
-	//document.cookie = "ks=" + session;
-	console.log("XXXXXXX ks  = " + session);
-	// var app = express();
-	// app.use(cookieParser());
-    //
-	// app.get('/cookie',function(req, res){
-	// 	console.log("BBBBBBBB");
-    //
-	// 	res.cookie("ks" , session).send('Cookie is set');
-	// });
-    //
-	// app.get('/', function(req, res) {
-	// 	console.log("CCCCCC");
-	// 	console.log("sssssAAAAAAAAAAAAA Cookies :  ", req.cookies);
-	// });
-
-	return new Promise((resolve, reject) => {
-			resolve(session);
-		});
-
+})
+.execute(client);
+});
 }
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
 	startWidgetSession()
-	.then((widgetSession) => startSession(widgetSession))
-	.then((session) => saveSession(session))
+		.then((widgetSession) => startSession(widgetSession))
 	.then((session) => getMetadata(session))
 	.then(({session, categories, items}) => res.render('index', {ks: session, serviceUrl: serviceUrl, categories: categories, items: items}))
 	.catch((err) => {
-		console.log(err);
-		res.render('error', err)
-	});
-
+		console.error(err);
+	res.render('error', err);
+});
 });
 
 module.exports = router;
