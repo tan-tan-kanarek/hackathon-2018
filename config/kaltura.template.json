@@ -1,0 +1,8 @@
+{
+	"serviceUrl": "https://www.kaltura.com/",
+	"partnerId": @PARTNER_ID@,
+	"appToken": {
+		"id": "@TOKEN_ID@",
+		"token": "@TOKEN_TOKEN@"
+	}
+}

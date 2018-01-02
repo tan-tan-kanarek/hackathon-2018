@@ -57,7 +57,7 @@ function listCategories(session) {
 		.setKs(session)
 		.completion((success, response) => {
 			if(success) {
-				resolve(session, response.objects);
+				resolve({session: session, categories: response.objects});
 			}
 			else {
 				reject(response);
@@ -73,7 +73,7 @@ router.get('/', function(req, res, next) {
 	startWidgetSession()
 	.then((widgetSession) => startSession(widgetSession))
 	.then((session) => listCategories(session))
-	.then((session, categories) => res.render('index', {ks: session, serviceUrl: serviceUrl, categories: categories}))
+	.then(({session, categories}) => res.render('index', {ks: session, serviceUrl: serviceUrl, categories: categories}))
 	.catch((err) => res.render('error', err));
 	
 });

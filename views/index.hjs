@@ -43,7 +43,9 @@
     <h1>kSmart</h1>
     <div id="main">
 	    <ul>
-	    	<li>{{ cat1 }}aaa</li>
+	    {{#categories}}
+			<li>{{name}}</li>
+		{{/categories}}
 	    </ul>
     </div>
   </body>
