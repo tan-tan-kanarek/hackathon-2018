@@ -109,15 +109,15 @@
     		$('#searchButton').click(() => loadSearch());
     	});
 
-    	var colors = [
-    	"rgb1,
-    	rgb2"
-    	];
     	
     </script>
     <style>
     h1 {
-        color: orange;
+        color: black;
+    }
+
+    h1 {
+        color: white;
     }
 
     categoriesStyle {
@@ -127,29 +127,44 @@
       text-align: center;
       color: red;
     }
+
+    imageStyle {
+        border: 2;
+        padding: 15px;
+    }
+
+    body {
+        background-color: #303030;
+    }
     </style>
   </head>
   <body>
     <h1>kSmart</h1>
-    <div id="menu">
+    <div  style="width:300px; float:left;" id="menu">
+
 	    <ul>
 	    {{#categories}}
 			<categoriesStyle style="background-color:{{rgbcolor}}; class="category" data-url="cat{{id}}">{{name}} <br></categoriesStyle>
 		{{/categories}}
 	    </ul>
     </div>
-    <div id="search">
-    	<img src="images/search.jpg" id="searchButton" />
+
+    <div style="width:300px; float:right;" id="search">
+    	<img src="images/search.jpg" id="searchButton" width="200" height="200 align="left""/>
     	<video id="video" autoplay="autoplay" style="display: none" width="400" height="300"></video>
     	<canvas id="canvas"></canvas>
     </div>
-    <div id="items">
+     </br></br></br></br></br></br>
+
+
+
+    <div style="width:300px; float:bottom;"id="items">
 	    <ul>
 	    {{#items}}
 	    	{{#relatedObjects}}
 	    		{{#thumbs}}
 	    			{{#objects}}
-						<li class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" /></li>
+						<imageStyle class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" border=1/></imageStyle>
 					{{/objects}}
 				{{/thumbs}}
 			{{/relatedObjects}}
