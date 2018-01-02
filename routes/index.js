@@ -78,17 +78,24 @@ function getMetadata(session) {
 	var responseProfile = new kaltura.objects.DetachedResponseProfile({
 		relatedProfiles: [thumbResponseProfile]
 	});
-
+	var rgbcolorsList = ["#00bfff","#0080ff","#0040ff","#DEB887","#CD853F", "#8B4513"];
 	kaltura.services.category.listAction(itemsFilter)
 		.setResponseProfile(responseProfile)
 		.add(kaltura.services.category.listAction(categoriesFilter))
 		.setKs(session)
 		.completion((success, response) => {
 		if(success) {
+			var catList = response[1].objects;
+			var arrayLength = catList.length;
+			for (var i = 0; i < arrayLength; i++) {
+				catList[i].rgbcolor = rgbcolorsList[i];
+				catList[i].index = i;
+				//Do something
+			}
 			resolve({
 				session: session,
 				items: response[0].objects,
-				categories: response[1].objects
+				categories: catList
 			});
 		}
 		else {

@@ -134,7 +134,7 @@
     <div id="menu">
 	    <ul>
 	    {{#categories}}
-			<categoriesStyle style="background-color:#808080; class="category" data-url="cat{{id}}">{{name}} <br></categoriesStyle>
+			<categoriesStyle style="background-color:{{rgbcolor}}; class="category" data-url="cat{{id}}">{{name}} <br></categoriesStyle>
 		{{/categories}}
 	    </ul>
     </div>
