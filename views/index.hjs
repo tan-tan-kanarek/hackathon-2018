@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>kSmart</title>
+	<script src="/javascripts/jquery-1.7.min.js"></script>
+	    
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+	<script src="/javascripts/KalturaClient.min.js"></script>
+	<script src="/javascripts/KalturaCategoryService.min.js"></script>
+    <script type="text/javascript">
+    	
+    	
+		var config = new KalturaConfiguration();
+		config.serviceUrl = "{{ serviceUrl }}";
+		
+		var client = new KalturaClient(config);
+		client.setKs("{{ ks }}");
+    	
+    	
+		function onCategoriesLoad(success, categories){
+		}
+		
+    	function loadCategories() {
+    		var filter = {
+    			objectType: "KalturaCategoryFilter",
+    			fullNameStartsWith: "Market>",
+    		};
+    		
+			KalturaCategoryService.listAction(filter)
+				.completion(onCategoriesLoad)
+				.execute(client);
+    	}
+    	
+    	$(function() {
+    	
+    		//loadCategories();
+    	});
+    	
+    </script>
+  </head>
+  <body>
+    <h1>kSmart</h1>
+    <div id="main">
+	    <ul>
+	    	<li>{{ cat1 }}aaa</li>
+	    </ul>
+    </div>
+  </body>
+</html>
