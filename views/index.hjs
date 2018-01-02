@@ -104,7 +104,7 @@
     			console.log('HTML context error!');
     		}
     		else {
-    			console.log('Get user media�');
+    			console.log('Get user media');
     			if (navigator.getUserMedia) navigator.getUserMedia({video:true}, gotStream, noStream);
     			else if (navigator.oGetUserMedia) navigator.oGetUserMedia({video:true}, gotStream, noStream);
     			else if (navigator.mozGetUserMedia) navigator.mozGetUserMedia({video:true}, gotStream, noStream);
@@ -118,11 +118,6 @@
     		$('#searchButton').click(() => loadSearch());
     	});
 
-    	var colors = [
-    	"rgb1,
-    	rgb2"
-    	];
-    	
     </script>
     <style>
     h1 {
@@ -143,7 +138,7 @@
     <div id="menu">
 	    <ul>
 	    {{#categories}}
-			<categoriesStyle style="background-color:{{rgbcolor}}; class="category" data-url="cat{{id}}">{{name}} <br></categoriesStyle>
+			<categoriesStyle style="background-color:{{rgbcolor}}; class="category"><a href="category?id={{id}}}">{{name}}</a> <br></categoriesStyle>
 		{{/categories}}
 	    </ul>
     </div>
@@ -165,9 +160,5 @@
 		{{/items}}
 	    </ul>
     </div>
-    <form enctype="multipart/form-data" method="post" action="search" target="new">
-    	<input type="file" name="image" />
-    	<input type="submit">
-    </form>
   </body>
 </html>

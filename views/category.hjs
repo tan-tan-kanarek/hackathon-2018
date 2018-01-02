@@ -1,28 +1,59 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Category</title>
+    <title>kSmart</title>	    
+    <link rel="stylesheet" href="stylesheets/style.css" />
+    
+	<script src="javascripts/jquery-1.7.min.js"></script>
+    <!--
+	<script src="javascripts/KalturaClient.min.js"></script>
+	<script src="javascripts/KalturaCategoryService.min.js"></script>
+	-->
+	
+    <script type="text/javascript">
+    	
+    	/*
+		var config = new KalturaConfiguration();
+		config.serviceUrl = "{{ serviceUrl }}";
+		
+		var client = new KalturaClient(config);
+		client.setKs("{{ ks }}");
+		*/
 
+    	$(function() {
+    	});
+
+    </script>
+    <style>
+    h1 {
+        color: orange;
+    }
+
+    categoriesStyle {
+     text-transform: uppercase;
+     font-weight: bold;
+      font-size: 40px;
+      text-align: center;
+      color: red;
+    }
+    </style>
+  </head>
   <body>
-    <h1>Category</h1>
-    <div id="main">
-	  <table style="width:100%">
-        <tr>
-          <th>Firstname</th>
-          <th>Lastname</th>
-          <th>Age</th>
-        </tr>
-        <tr>
-          <td>Jill</td>
-          <td>Smith</td>
-          <td>50</td>
-        </tr>
-        <tr>
-          <td>Eve</td>
-          <td>Jackson</td>
-          <td>94</td>
-        </tr>
-      </table>
+    <div id="items">
+	    <ul>
+	    {{#items}}
+	    	{{#relatedObjects}}
+	    		{{#thumbs}}
+	    			{{#objects}}
+						<li class="item" data-url="item{{id}}">
+							<img src="{{thumbnailUrl}}" />
+							{{name}}
+						</li>
+					{{/objects}}
+				{{/thumbs}}
+			{{/relatedObjects}}
+		{{/items}}
+	    </ul>
     </div>
   </body>
 </html>
