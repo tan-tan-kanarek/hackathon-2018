@@ -147,8 +147,7 @@
     }
 
     imageStyle {
-        border: 2;
-        padding: 15px;
+
     }
 
     body {
@@ -165,7 +164,6 @@
           <h1>kSmart</br></br></h1>
         </div>
       </div>
-    </div>
 
 
     <div  style="width:300px; float:left;" id="menu">
@@ -180,26 +178,34 @@
     </div>
 
     <div style="width:300px; float:right;" id="search">
+        </br>
     	<img src="images/search.jpg" id="searchButton" width="200" height="200 align="left""/>
     	<video id="video" autoplay="autoplay" style="display: none" width="400" height="300"></video>
     	<canvas id="canvas" style="display: none"></canvas>
     </div>
 
 
+ </div>
 
+ <div class="container">
+      <div class="row">
+    <div id="items" style="float:right; width: 33.3333%;">
 
-    <div style="width:300px; float:bottom;"id="items">
-	    <ul>
 	    {{#items}}
 	    	{{#relatedObjects}}
 	    		{{#thumbs}}
 	    			{{#objects}}
-						<imageStyle class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" border=1/></imageStyle>
+	    			<div style="float:right;" >
+						<imageStyle class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" /></imageStyle>
+					<div>
 					{{/objects}}
 				{{/thumbs}}
 			{{/relatedObjects}}
 		{{/items}}
-	    </ul>
+
     </div>
+       </div>
+      </div>
+
   </body>
 </html>
