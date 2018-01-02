@@ -90,7 +90,6 @@ function getMetadata(session) {
 			for (var i = 0; i < arrayLength; i++) {
 				catList[i].rgbcolor = rgbcolorsList[i];
 				catList[i].index = i;
-				//Do something
 			}
 			resolve({
 				session: session,

@@ -3,7 +3,14 @@
   <head>
     <title>kSmart</title>	    
     <link rel="stylesheet" href="stylesheets/style.css" />
-    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="javascripts/jquery-1.7.min.js"></script>
     <!--
 	<script src="javascripts/KalturaClient.min.js"></script>
@@ -121,7 +128,12 @@
     </script>
     <style>
     h1 {
-        color: orange;
+        color: black;
+        text-align: center
+    }
+
+    h1 {
+        color: white;
     }
 
     categoriesStyle {
@@ -129,31 +141,60 @@
      font-weight: bold;
       font-size: 40px;
       text-align: center;
-      color: red;
+      color: white;
+      margin-left: 20px;
+      height: 90px;
+    }
+
+    imageStyle {
+        border: 2;
+        padding: 15px;
+    }
+
+    body {
+        background-color: #303030;
     }
     </style>
   </head>
   <body>
-    <h1>kSmart</h1>
-    <div id="menu">
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h1>kSmart</br></br></h1>
+        </div>
+      </div>
+    </div>
+
+
+    <div  style="width:300px; float:left;" id="menu">
+
 	    <ul>
 	    {{#categories}}
-			<categoriesStyle style="background-color:{{rgbcolor}}; class="category"><a href="category?id={{id}}}">{{name}}</a> <br></categoriesStyle>
+	    <div style="background-color:{{rgbcolor}}; width: 450px;">
+			<categoriesStyle  class="category"><a href="category?id={{id}}}">{{name}}</a> <br></categoriesStyle>
+		<div>
 		{{/categories}}
 	    </ul>
     </div>
-    <div id="search">
-    	<img src="images/search.jpg" id="searchButton" />
+
+    <div style="width:300px; float:right;" id="search">
+    	<img src="images/search.jpg" id="searchButton" width="200" height="200 align="left""/>
     	<video id="video" autoplay="autoplay" style="display: none" width="400" height="300"></video>
     	<canvas id="canvas" style="display: none"></canvas>
     </div>
-    <div id="items">
+
+
+
+
+    <div style="width:300px; float:bottom;"id="items">
 	    <ul>
 	    {{#items}}
 	    	{{#relatedObjects}}
 	    		{{#thumbs}}
 	    			{{#objects}}
-						<li class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" /></li>
+						<imageStyle class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" border=1/></imageStyle>
 					{{/objects}}
 				{{/thumbs}}
 			{{/relatedObjects}}
