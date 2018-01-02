@@ -4,6 +4,8 @@ const fs = require("fs");
 const md5 = require('md5');
 const kaltura = require("kaltura-client");
 const express = require('express');
+var cookieParser = require('cookie-parser');
+
 const router = express.Router();
 
 const {serviceUrl, partnerId, appToken} = JSON.parse(fs.readFileSync("config/kaltura.json"));
@@ -31,6 +33,7 @@ function startWidgetSession() {
 
 function startSession(widgetSession) {
 	return new Promise((resolve, reject) => {
+
 		const tokenHash = md5(widgetSession + appToken.token);
 		kaltura.services.appToken.startSession(appToken.id, tokenHash)
 		.setKs(widgetSession)
@@ -67,14 +70,42 @@ function listCategories(session) {
 	});
 }
 
+
+function saveSession(session) {
+	//document.cookie = "ks=" + session;
+	console.log("XXXXXXX ks  = " + session);
+	// var app = express();
+	// app.use(cookieParser());
+    //
+	// app.get('/cookie',function(req, res){
+	// 	console.log("BBBBBBBB");
+    //
+	// 	res.cookie("ks" , session).send('Cookie is set');
+	// });
+    //
+	// app.get('/', function(req, res) {
+	// 	console.log("CCCCCC");
+	// 	console.log("sssssAAAAAAAAAAAAA Cookies :  ", req.cookies);
+	// });
+
+	return new Promise((resolve, reject) => {
+			resolve(session);
+		});
+
+}
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
 	startWidgetSession()
 	.then((widgetSession) => startSession(widgetSession))
+	.then((session) => saveSession(session))
 	.then((session) => listCategories(session))
 	.then(({session, categories}) => res.render('index', {ks: session, serviceUrl: serviceUrl, categories: categories}))
-	.catch((err) => res.render('error', err));
+	.catch((err) => {
+		console.log(err);
+		res.render('error', err)
+	});
 	
 });
 
