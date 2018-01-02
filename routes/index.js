@@ -1,9 +1,9 @@
 /*jshint esnext: true */
 
 const fs = require("fs");
-const md5 = require('md5');
+const md5 = require("md5");
 const kaltura = require("kaltura-client");
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 const {serviceUrl, partnerId, appToken} = JSON.parse(fs.readFileSync("config/kaltura.json"));
@@ -106,16 +106,16 @@ function getMetadata(session) {
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get("/", function(req, res, next) {
 
 	startWidgetSession()
 		.then((widgetSession) => startSession(widgetSession))
 	.then((session) => getMetadata(session))
-	.then(({session, categories, items}) => res.render('index', {ks: session, serviceUrl: serviceUrl, categories: categories, items: items}))
+	.then(({session, categories, items}) => res.render("index", {ks: session, serviceUrl: serviceUrl, categories: categories, items: items}))
 	.catch((err) => {
 		console.error(err);
-	res.render('error', err);
-});
+		res.render("error", err);
+	});
 });
 
 module.exports = router;

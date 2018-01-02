@@ -58,6 +58,10 @@
 				video.src = stream;
 			}
     		
+			capture();
+		}
+		
+    	function capture() {
     		setTimeout(captureAndSearch, 1000);
 		}
 		
@@ -66,20 +70,25 @@
     		canvas.height = video.videoHeight;
     		canvas.getContext('2d').drawImage(video, 0, 0);
     		
-    		var img = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
-    		console.log(img);
-
+    		var img = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
     		$.ajax({
     	        url: "search",
     	        type: "POST",
-    	        data: "{ 'image': '" + img + "' }",
+    	        data: "{\"image\":\"" + img + "\"}",
     	        contentType: "application/json; charset=utf-8",
     	        dataType: "json",
-    	        success: function () {
-    	            alert('Image Uploaded!!');
+    	        success: function (itemId) {
+    	        	console.log('Image uploaded', itemId);
+    	        	if(itemId) {
+    	        		document.location = 'category?id=' + itemId;
+    	        	}
+    	        	else {
+    	        		capture();
+    	        	}
     	        },
     	        error: function () {
-    	            alert("There was some error while uploading Image");
+    	        	console.log("Upload failed");
+    	        	capture();
     	        }
     	    });
 		}
@@ -152,7 +161,7 @@
     <div style="width:300px; float:right;" id="search">
     	<img src="images/search.jpg" id="searchButton" width="200" height="200 align="left""/>
     	<video id="video" autoplay="autoplay" style="display: none" width="400" height="300"></video>
-    	<canvas id="canvas"></canvas>
+    	<canvas id="canvas" style="display: none"></canvas>
     </div>
      </br></br></br></br></br></br>
 
@@ -171,5 +180,9 @@
 		{{/items}}
 	    </ul>
     </div>
+    <form enctype="multipart/form-data" method="post" action="search" target="new">
+    	<input type="file" name="image" />
+    	<input type="submit">
+    </form>
   </body>
 </html>
