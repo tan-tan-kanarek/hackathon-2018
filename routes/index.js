@@ -61,7 +61,7 @@ function getMetadata(session) {
     
     	var thumbnailsFilter = new kaltura.objects.MediaEntryFilter({
     		tagsLike: "thumb",
-    		statusEqual: kaltura.enums.EntryStatus.NO_CONTENT
+    		statusIn: kaltura.enums.EntryStatus.NO_CONTENT + "," + kaltura.enums.EntryStatus.READY
     	});
     
     	var thumbnailsFilterMapping = new kaltura.objects.ResponseProfileMapping({
