@@ -3,7 +3,14 @@
   <head>
     <title>kSmart</title>	    
     <link rel="stylesheet" href="stylesheets/style.css" />
-    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="javascripts/jquery-1.7.min.js"></script>
     <!--
 	<script src="javascripts/KalturaClient.min.js"></script>
@@ -104,7 +111,7 @@
     			console.log('HTML context error!');
     		}
     		else {
-    			console.log('Get user media�');
+    			console.log('Get user media');
     			if (navigator.getUserMedia) navigator.getUserMedia({video:true}, gotStream, noStream);
     			else if (navigator.oGetUserMedia) navigator.oGetUserMedia({video:true}, gotStream, noStream);
     			else if (navigator.mozGetUserMedia) navigator.mozGetUserMedia({video:true}, gotStream, noStream);
@@ -123,6 +130,7 @@
     <style>
     h1 {
         color: black;
+        text-align: center
     }
 
     h1 {
@@ -134,7 +142,9 @@
      font-weight: bold;
       font-size: 40px;
       text-align: center;
-      color: red;
+      color: white;
+      margin-left: 20px;
+      height: 90px;
     }
 
     imageStyle {
@@ -148,12 +158,24 @@
     </style>
   </head>
   <body>
-    <h1>kSmart</h1>
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h1>kSmart</br></br></h1>
+        </div>
+      </div>
+    </div>
+
+
     <div  style="width:300px; float:left;" id="menu">
 
 	    <ul>
 	    {{#categories}}
-			<categoriesStyle style="background-color:{{rgbcolor}}; class="category" data-url="cat{{id}}">{{name}} <br></categoriesStyle>
+	    <div style="background-color:{{rgbcolor}}; width: 450px;">
+			<categoriesStyle  class="category" data-url="cat{{id}}">{{name}} <br></categoriesStyle>
+		<div>
 		{{/categories}}
 	    </ul>
     </div>
@@ -163,7 +185,7 @@
     	<video id="video" autoplay="autoplay" style="display: none" width="400" height="300"></video>
     	<canvas id="canvas" style="display: none"></canvas>
     </div>
-     </br></br></br></br></br></br>
+
 
 
 
@@ -180,9 +202,6 @@
 		{{/items}}
 	    </ul>
     </div>
-    <form enctype="multipart/form-data" method="post" action="search" target="new">
-    	<input type="file" name="image" />
-    	<input type="submit">
-    </form>
+
   </body>
 </html>
