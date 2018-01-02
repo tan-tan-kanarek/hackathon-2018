@@ -95,7 +95,7 @@
     			console.log('HTML context error!');
     		}
     		else {
-    			console.log('Get user media…');
+    			console.log('Get user mediaï¿½');
     			if (navigator.getUserMedia) navigator.getUserMedia({video:true}, gotStream, noStream);
     			else if (navigator.oGetUserMedia) navigator.oGetUserMedia({video:true}, gotStream, noStream);
     			else if (navigator.mozGetUserMedia) navigator.mozGetUserMedia({video:true}, gotStream, noStream);
@@ -108,15 +108,33 @@
     	$(function() {
     		$('#searchButton').click(() => loadSearch());
     	});
+
+    	var colors = [
+    	"rgb1,
+    	rgb2"
+    	];
     	
     </script>
+    <style>
+    h1 {
+        color: orange;
+    }
+
+    categoriesStyle {
+     text-transform: uppercase;
+     font-weight: bold;
+      font-size: 40px;
+      text-align: center;
+      color: red;
+    }
+    </style>
   </head>
   <body>
     <h1>kSmart</h1>
     <div id="menu">
 	    <ul>
 	    {{#categories}}
-			<li class="category" data-url="cat{{id}}">{{name}}</li>
+			<categoriesStyle style="background-color:#808080; class="category" data-url="cat{{id}}">{{name}} <br></categoriesStyle>
 		{{/categories}}
 	    </ul>
     </div>
