@@ -49,6 +49,15 @@ function startSession(widgetSession) {
 }
 
 function getMetadata(session, parentId) {
+	var day = 60 * 60 * 24;
+	var yesterday = (Date.now() / 1000) - day;
+	var lanes = 4;
+	var lanesMax = [];
+	var laneSize = day / lanes;
+	for(var lane = 1; lane <= lanes; lane++) {
+		lanesMax.push(yesterday + (laneSize * lane)); 
+	}
+	
     return new Promise((resolve, reject) => {
 
         var itemsFilter = new kaltura.objects.CategoryFilter({
@@ -61,10 +70,12 @@ function getMetadata(session, parentId) {
     
     	var thumbnailsFilter = new kaltura.objects.MediaEntryFilter({
     		tagsLike: "thumb",
-    		statusEqual: kaltura.enums.EntryStatus.NO_CONTENT
+    		statusIn: kaltura.enums.EntryStatus.NO_CONTENT + "," + kaltura.enums.EntryStatus.READY
     	});
     
     	var eventsFilter = new kaltura.objects.MediaEntryFilter({
+    		tagsLike: "event",
+    		createdAtGreaterThanOrEqual: yesterday
     	});
     
     	var entryFilterMapping = new kaltura.objects.ResponseProfileMapping({
@@ -96,9 +107,22 @@ function getMetadata(session, parentId) {
             if(success) {
             	var items = response[0].objects;
             	for(var i = 0; i < items.length; i++) {
-            		if(items[i].relatedObjects.events.totalCount) {
-            			for(var event in items[i].relatedObjects.events.objects) {
-            				
+            		var item = items[i];
+            		items[i].lanes = Array(lanes);
+    				for(var lane = 0; lane < lanes; lane++) {
+    					items[i].lanes[lane] = {
+    						events: 0,
+    						purchased: Math.floor(Math.random() * 10)
+    					};
+    				}
+            		if(item.relatedObjects.events.totalCount) {
+            			for(var eventIndex in item.relatedObjects.events.objects) {
+            				var event = item.relatedObjects.events.objects[eventIndex];
+            				for(var lane = 0; lane < lanes; lane++) {
+            					if(event.createdAt < lanesMax[lane]) {
+            						items[i].lanes[lane].events++;
+            					}
+            				}
             			}
             		}
             	}
@@ -125,7 +149,12 @@ router.get('/', function(req, res, next) {
     startWidgetSession()
     .then((widgetSession) => startSession(widgetSession))
     .then((session) => getMetadata(session, query.id))
-    .then(({session, items, liveStreams}) => res.render('category', {ks: session, serviceUrl: serviceUrl, items: items, liveStreams: liveStreams}))
+    .then(({session, items, liveStreams}) => res.render('category', {
+    	ks: session, 
+    	serviceUrl: serviceUrl, 
+    	items: items, 
+    	liveStreams: liveStreams
+    }))
     .catch((err) => res.render('error', err));
 
 });

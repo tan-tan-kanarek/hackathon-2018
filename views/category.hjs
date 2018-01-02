@@ -48,6 +48,9 @@
 						<li class="item" data-url="item{{id}}">
 							<img src="{{thumbnailUrl}}" />
 							{{name}}
+							{{#lanes}}
+								{{events}}/{{purchased}}
+							{{/lanes}}
 						</li>
 					{{/objects}}
 				{{/thumbs}}
@@ -55,5 +58,12 @@
 		{{/items}}
 	    </ul>
     </div>
+    <div id="liveStreams">
+	    <ul>
+	    {{#liveStreams}}
+	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
+		{{/liveStreams}}
+	    </ul>
+	</div>
   </body>
 </html>
