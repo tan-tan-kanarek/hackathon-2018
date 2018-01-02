@@ -49,18 +49,50 @@ function startSession(widgetSession) {
 	});
 }
 
-function listCategories(session) {
+function getMetadata(session) {
 	return new Promise((resolve, reject) => {
 
-    	var filter = new kaltura.objects.CategoryFilter({
-    		fullNameStartsWith: "Market"
+    	var categoriesFilter = new kaltura.objects.CategoryFilter({
+    		fullNameStartsWith: "Market>",
+    		tagsLike: "department"
     	});
 
-		kaltura.services.category.listAction(filter)
+    	var itemsFilter = new kaltura.objects.CategoryFilter({
+    		fullNameStartsWith: "Market>",
+    		tagsLike: "item"
+    	});
+    	
+    	var thumbnailsFilter = new kaltura.objects.MediaEntryFilter({
+    		tagsLike: "thumb",
+    		statusEqual: kaltura.enums.EntryStatus.NO_CONTENT
+    	});
+
+    	var thumbnailsFilterMapping = new kaltura.objects.ResponseProfileMapping({
+    		filterProperty: "categoriesIdsMatchAnd",
+    		parentProperty: "id"
+    	});
+    	
+    	var thumbResponseProfile = new kaltura.objects.DetachedResponseProfile({
+    		name: "thumbs",
+    		filter: thumbnailsFilter,
+    		mappings: [thumbnailsFilterMapping]
+    	});
+
+    	var responseProfile = new kaltura.objects.DetachedResponseProfile({
+    		relatedProfiles: [thumbResponseProfile]
+    	});
+    	
+    	kaltura.services.category.listAction(itemsFilter)
+    	.setResponseProfile(responseProfile)
+		.add(kaltura.services.category.listAction(categoriesFilter))
 		.setKs(session)
 		.completion((success, response) => {
 			if(success) {
-				resolve({session: session, categories: response.objects});
+				resolve({
+					session: session, 
+					items: response[0].objects, 
+					categories: response[1].objects
+				});
 			}
 			else {
 				reject(response);
@@ -100,13 +132,13 @@ router.get('/', function(req, res, next) {
 	startWidgetSession()
 	.then((widgetSession) => startSession(widgetSession))
 	.then((session) => saveSession(session))
-	.then((session) => listCategories(session))
-	.then(({session, categories}) => res.render('index', {ks: session, serviceUrl: serviceUrl, categories: categories}))
+	.then((session) => getMetadata(session))
+	.then(({session, categories, items}) => res.render('index', {ks: session, serviceUrl: serviceUrl, categories: categories, items: items}))
 	.catch((err) => {
 		console.log(err);
 		res.render('error', err)
 	});
-	
+
 });
 
 module.exports = router;

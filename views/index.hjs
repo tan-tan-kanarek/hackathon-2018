@@ -1,51 +1,141 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>kSmart</title>
-	<script src="/javascripts/jquery-1.7.min.js"></script>
-	    
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>kSmart</title>	    
+    <link rel="stylesheet" href="stylesheets/style.css" />
     
-	<script src="/javascripts/KalturaClient.min.js"></script>
-	<script src="/javascripts/KalturaCategoryService.min.js"></script>
+	<script src="javascripts/jquery-1.7.min.js"></script>
+    <!--
+	<script src="javascripts/KalturaClient.min.js"></script>
+	<script src="javascripts/KalturaCategoryService.min.js"></script>
+	-->
+	
     <script type="text/javascript">
     	
-    	
+    	/*
 		var config = new KalturaConfiguration();
 		config.serviceUrl = "{{ serviceUrl }}";
 		
 		var client = new KalturaClient(config);
 		client.setKs("{{ ks }}");
-    	
-    	
-		function onCategoriesLoad(success, categories){
+		*/
+
+		function noStream()
+		{
+			console.log('Access to camera was denied!');
 		}
 		
-    	function loadCategories() {
-    		var filter = {
-    			objectType: "KalturaCategoryFilter",
-    			fullNameStartsWith: "Market>",
-    		};
+		function gotStream(stream)
+		{
+			var myButton = document.getElementById('buttonStart');
+			if (myButton) {
+				myButton.disabled = true;
+			}
+			
+			videoStream = stream;
+			console.log('Got stream.');
+			
+			video.onerror = function () {
+				console.log('video.onerror');
+				if (video) stop();
+			};
+			stream.onended = noStream;
+			if (window.URL) {
+				video.src = window.URL.createObjectURL(stream);
+			}
+			else if (video.mozSrcObject !== undefined) {//FF18a
+				video.mozSrcObject = stream;
+				video.play();
+			}
+			else if (navigator.mozGetUserMedia) {//FF16a, 17a
+				video.src = stream;
+				video.play();
+			}
+			else if (window.URL) {
+				video.src = window.URL.createObjectURL(stream);
+			}
+			else {
+				video.src = stream;
+			}
     		
-			KalturaCategoryService.listAction(filter)
-				.completion(onCategoriesLoad)
-				.execute(client);
+    		setTimeout(captureAndSearch, 1000);
+		}
+		
+    	function captureAndSearch() {
+    		canvas.width = video.videoWidth;
+    		canvas.height = video.videoHeight;
+    		canvas.getContext('2d').drawImage(video, 0, 0);
+    		
+    		var img = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
+    		console.log(img);
+
+    		$.ajax({
+    	        url: "search",
+    	        type: "POST",
+    	        data: "{ 'image': '" + img + "' }",
+    	        contentType: "application/json; charset=utf-8",
+    	        dataType: "json",
+    	        success: function () {
+    	            alert('Image Uploaded!!');
+    	        },
+    	        error: function () {
+    	            alert("There was some error while uploading Image");
+    	        }
+    	    });
+		}
+		
+    	function loadSearch() {
+			$('#searchButton').hide();
+			$('#video').show();
+
+    		if ((typeof window === 'undefined') || (typeof navigator === 'undefined')) {
+    			console.log('This page needs a Web browser with the objects window.* and navigator.*!');
+    		}
+    		else if (!video) {
+    			console.log('HTML context error!');
+    		}
+    		else {
+    			console.log('Get user media…');
+    			if (navigator.getUserMedia) navigator.getUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.oGetUserMedia) navigator.oGetUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.mozGetUserMedia) navigator.mozGetUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.webkitGetUserMedia) navigator.webkitGetUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.msGetUserMedia) navigator.msGetUserMedia({video:true, audio:false}, gotStream, noStream);
+    			else console.log('getUserMedia() not available from your Web browser!');
+    		}
     	}
     	
     	$(function() {
-    	
-    		//loadCategories();
+    		$('#searchButton').click(() => loadSearch());
     	});
     	
     </script>
   </head>
   <body>
     <h1>kSmart</h1>
-    <div id="main">
+    <div id="menu">
 	    <ul>
 	    {{#categories}}
-			<li>{{name}}</li>
+			<li class="category" data-url="cat{{id}}">{{name}}</li>
 		{{/categories}}
+	    </ul>
+    </div>
+    <div id="search">
+    	<img src="images/search.jpg" id="searchButton" />
+    	<video id="video" autoplay="autoplay" style="display: none" width="400" height="300"></video>
+    	<canvas id="canvas"></canvas>
+    </div>
+    <div id="items">
+	    <ul>
+	    {{#items}}
+	    	{{#relatedObjects}}
+	    		{{#thumbs}}
+	    			{{#objects}}
+						<li class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" /></li>
+					{{/objects}}
+				{{/thumbs}}
+			{{/relatedObjects}}
+		{{/items}}
 	    </ul>
     </div>
   </body>
