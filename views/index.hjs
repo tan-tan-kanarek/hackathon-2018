@@ -87,7 +87,7 @@
     	        success: function (itemId) {
     	        	console.log('Image uploaded', itemId);
     	        	if(itemId) {
-    	        		document.location = 'category?id=' + itemId;
+    	        		document.location = 'item?id=' + itemId;
     	        	}
     	        	else {
     	        		capture();
@@ -208,15 +208,17 @@
     <div id="items" style="float:right; width: 33.3333%;">
 
 	    {{#items}}
-	    	{{#relatedObjects}}
-	    		{{#thumbs}}
-	    			{{#objects}}
-	    			<td>
-						<imageStyle class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" /></imageStyle>
-					</td>
-					{{/objects}}
-				{{/thumbs}}
-			{{/relatedObjects}}
+	    	<td>
+				<imageStyle class="item" data-url="item{{id}}">
+					<a href="item?id={{id}}">
+				    	{{#relatedObjects}}
+				    		{{#thumbs}}
+				    			{{#objects}}<img src="{{thumbnailUrl}}" />{{/objects}}
+							{{/thumbs}}
+						{{/relatedObjects}}
+					</a>
+				</imageStyle>
+			</td>
 		{{/items}}
 
     </div>

@@ -148,7 +148,10 @@ router.get('/', function(req, res, next) {
     	thumb: thumb, 
     	events: events
     }))
-    .catch((err) => res.render('error', err));
+	.catch((err) => {
+		console.error(err);
+		res.render("error", err);
+	});
 
 });
 

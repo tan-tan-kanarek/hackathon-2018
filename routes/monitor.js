@@ -50,100 +50,106 @@ function startSession(widgetSession) {
 
 var day = 60 * 60 * 24;
 var yesterday = (Date.now() / 1000) - day;
-var lanes = 4;
-var lanesMax = [];
-var laneSize = day / lanes;
-for(var lane = 1; lane <= lanes; lane++) {
-	lanesMax.push(yesterday + (laneSize * lane)); 
+
+function padStart(src) {
+	src += '';
+    var targetLength = 2;
+    var padString = '0';
+    if (src.length > targetLength) {
+        return src;
+    }
+    else {
+        targetLength = targetLength-src.length;
+        if (targetLength > padString.length) {
+            padString += padString.repeat(targetLength/padString.length);
+        }
+        return padString.slice(0,targetLength) + src;
+    }
 }
 
-function getLanes(events) {
-	var ret = Array(lanes);
-	for(var lane = 0; lane < lanes; lane++) {
-		ret[lane] = {
-			grabs: 0,
-			misplacements: 0,
-			sales: Math.floor(Math.random() * 10)
-		};
-	}
-	for(var eventIndex in events) {
-		var lastLane = 0;
-		for(var lane = 0; lane < lanes; lane++) {
-			var event = events[eventIndex];
-			if(event.createdAt < lanesMax[lane] && event.createdAt > lastLane) {
-				if(event.tags.indexOf("grab") >= 0) {
-					ret[lane].grabs++;
-				}
-				if(event.tags.indexOf("misplacement") >= 0) {
-					ret[lane].misplacements++;
-				}
-			}
-			lastLane = lanesMax[lane];
-		}
-	}
-	
-	return ret;
-}
-
-function getMetadata(session, parentId) {
+function getMetadata(session, entryId, categoryId) {
 	
     return new Promise((resolve, reject) => {
 
-        var itemsFilter = new kaltura.objects.CategoryFilter({
-        	parentIdEqual: parentId
-        });
-
-        var liveStreamsFilter = new kaltura.objects.LiveStreamEntryFilter({
-        	categoriesIdsMatchAnd: parentId
-        });
-    
-    	var thumbnailsFilter = new kaltura.objects.MediaEntryFilter({
-    		tagsLike: "thumb",
-    		statusIn: kaltura.enums.EntryStatus.NO_CONTENT + "," + kaltura.enums.EntryStatus.READY
-    	});
-    
     	var eventsFilter = new kaltura.objects.MediaEntryFilter({
+    		categoryAncestorIdIn: categoryId,
+    		tagsLike: "event",
+    		createdAtGreaterThanOrEqual: yesterday,
+    		statusIn: kaltura.enums.EntryStatus.NO_CONTENT + "," + kaltura.enums.EntryStatus.READY + "," + kaltura.enums.EntryStatus.IMPORT + "," + kaltura.enums.EntryStatus.PRECONVERT,
+    		orderBy: kaltura.enums.MediaEntryOrderBy.CREATED_AT_DESC
+    	});
+
+    	var relatedEventsFilter = new kaltura.objects.MediaEntryFilter({
     		tagsLike: "event",
     		createdAtGreaterThanOrEqual: yesterday,
     		statusIn: kaltura.enums.EntryStatus.NO_CONTENT + "," + kaltura.enums.EntryStatus.READY + "," + kaltura.enums.EntryStatus.IMPORT + "," + kaltura.enums.EntryStatus.PRECONVERT
     	});
-    
+
+        var itemsFilter = new kaltura.objects.CategoryFilter({
+        	parentIdEqual: categoryId
+        });
+
     	var entryFilterMapping = new kaltura.objects.ResponseProfileMapping({
     		filterProperty: "categoriesIdsMatchAnd",
     		parentProperty: "id"
     	});
-    
-    	var thumbResponseProfile = new kaltura.objects.DetachedResponseProfile({
-    		name: "thumbs",
-    		filter: thumbnailsFilter,
-    		mappings: [entryFilterMapping]
-    	});
-    
+
     	var eventsResponseProfile = new kaltura.objects.DetachedResponseProfile({
     		name: "events",
-    		filter: eventsFilter,
+    		filter: relatedEventsFilter,
     		mappings: [entryFilterMapping]
     	});
     
     	var responseProfile = new kaltura.objects.DetachedResponseProfile({
-    		relatedProfiles: [thumbResponseProfile, eventsResponseProfile]
+    		relatedProfiles: [eventsResponseProfile]
     	});
 
-        kaltura.services.category.listAction(itemsFilter)
+    	kaltura.services.category.listAction(itemsFilter)
 		.setResponseProfile(responseProfile)
-        .add(kaltura.services.liveStream.listAction(liveStreamsFilter))
+        .add(kaltura.services.category.get(categoryId))
+        .add(kaltura.services.liveStream.get(entryId))
+        .add(kaltura.services.media.listAction(eventsFilter))
         .setKs(session)
         .completion((success, response) => {
             if(success) {
             	var items = response[0].objects;
+            	var category = response[1];
+            	var entry = response[2];
+            	var events = response[3].objects;
+            	var eventsItems = {};
+            	
             	for(var i = 0; i < items.length; i++) {
-            		items[i].lanes = getLanes(items[i].relatedObjects.events.objects);
+            		var item = items[i];
+            		var itemEvents = item.relatedObjects.events.objects;
+            		
+            		for(var j = 0; j < itemEvents.length; j++) {
+            			eventsItems[itemEvents[j].id] = item;
+            		}
+            	}
+            	
+            	for(var i = 0; i < events.length; i++) {
+            		if(!eventsItems[events[i].id]) {
+            			continue;
+            		}
+            		
+            		events[i].item = eventsItems[events[i].id];
+            		
+            		var d = new Date(events[i].createdAt * 1000);
+            		events[i].time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
+
+    				if(events[i].tags.indexOf("grab") >= 0) {
+    					events[i].action = "grabbed";
+    				}
+    				if(events[i].tags.indexOf("misplacement") >= 0) {
+    					events[i].action = "misplaced";
+    				}
             	}
             	
                 resolve({
                 	session: session, 
-                	items: items, 
-                	liveStreams: response[1].objects
+                	entry: entry,
+                	category: category,
+                	events: events
                 });
             }
             else {
@@ -158,17 +164,18 @@ router.get('/', function(req, res, next) {
 
     var urlParts = req.originalUrl.split("?");
     var query = querystring.parse(urlParts[1]);
-    var categoryId = query.id;
+    var entryId = query.id;
+    var categoryId = query.categoryId;
     
     startWidgetSession()
     .then((widgetSession) => startSession(widgetSession))
-    .then((session) => getMetadata(session, categoryId))
-    .then(({session, items, liveStreams}) => res.render('category', {
+    .then((session) => getMetadata(session, entryId, categoryId))
+    .then(({session, entry, category, events}) => res.render('monitor', {
     	ks: session, 
     	serviceUrl: serviceUrl, 
-    	categoryId: categoryId,
-    	items: items, 
-    	liveStreams: liveStreams
+    	entry: entry, 
+    	category: category,
+    	events: events
     }))
 	.catch((err) => {
 		console.error(err);

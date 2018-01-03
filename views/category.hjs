@@ -21,6 +21,15 @@
 		*/
 
     	$(function() {
+
+    		/*
+    	    {{#liveStreams}}
+    	    	$("#kaltura_player_{{id}}").click(() => {
+    	    		document.location = "monitor?id={{id}}";
+    	    	});
+    		{{/liveStreams}}
+    		*/
+    		
     	});
 
     </script>
@@ -64,6 +73,7 @@
 	    <ul>
 	    {{#liveStreams}}
 	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
+	    	<a href="monitor?categoryId={{categoryId}}&id={{id}}">monitor</a>
 		{{/liveStreams}}
 	    </ul>
 	</div>

@@ -8,7 +8,7 @@ router.post("/", function(req, res, next) {
 
 	var buffer = Buffer.from(req.body.image, "base64");
 	fs.writeFile("test.jpg", buffer, (err) => {
-		res.send("83328941");
+		res.send("83604851");
 //		res.send(false);
 	});
 });

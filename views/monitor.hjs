@@ -42,22 +42,21 @@
     {{#category}}
 		<h1><a href="category?id={{id}}">{{name}}</a></h1>    	
 	{{/category}}
- 	{{#thumb}}
-		<img src="{{thumbnailUrl}}" />
-	{{/thumb}}
- 	{{#item}}
-		<img src="{{thumbnailUrl}}" />
-			{{name}}
-			{{#lanes}}
-				{{grabs}}/{{misplacements}}/{{sales}}
-			{{/lanes}}
-	{{/item}}
-    <div id="liveStreams">
-	    <ul>
-	    {{#events}}
-	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41406521/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
-		{{/events}}
-	    </ul>
+    <div id="liveStream">
+	    {{#entry}}
+	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
+		{{/entry}}
+	</div>
+    <div id="log">
+    	<ul>
+		    {{#events}}
+		    	<li>
+		    	{{#item}} 
+		    		{{name}} 
+		    	{{/item}}
+		    	{{action}} {{time}}</li>
+			{{/events}}
+		</ul>
 	</div>
   </body>
 </html>
