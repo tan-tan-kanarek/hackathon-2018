@@ -1,27 +1,14 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>kSmart</title>	    
-    <link rel="stylesheet" href="stylesheets/style.css" />
-    
-	<script src="javascripts/jquery-1.7.min.js"></script>
-    <!--
-	<script src="javascripts/KalturaClient.min.js"></script>
-	<script src="javascripts/KalturaCategoryService.min.js"></script>
-	-->
-	
-	<script src="/socket.io/socket.io.js"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
     <script type="text/javascript">
-    	
-    	/*
-		var config = new KalturaConfiguration();
-		config.serviceUrl = "{{ serviceUrl }}";
-		
-		var client = new KalturaClient(config);
-		client.setKs("{{ ks }}");
-		*/
-
 		let socket;	
 		
 
@@ -61,7 +48,7 @@
 		}
 		
 		function addEvent(txt) {
-			$('#eventsLog').prepend('<li>' + txt + '</li>');
+			$('#eventsLog').prepend('<div class="event-log-item"><div class="event-circle grab-color"></div><span>' + txt + '</span><span class="time">04:55pm</span></div>');
 		}
 
 		function follow() {
@@ -78,44 +65,58 @@
     	});
 
     </script>
-    <style>
-    
-    .alert {
-    	border: 10px red solid;
-    }
-    
-    h1 {
-        color: orange;
-    }
-
-    categoriesStyle {
-     text-transform: uppercase;
-     font-weight: bold;
-      font-size: 40px;
-      text-align: center;
-      color: red;
-    }
-    </style>
-  </head>
-  <body>
-    {{#category}}
-		<h1><a href="category?id={{id}}">{{name}}</a></h1>    	
-	{{/category}}
-    <div id="liveStream">
-	    {{#entry}}
-	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
-		{{/entry}}
-	</div>
-    <div id="log">
-    	<ul id="eventsLog">
-		    {{#events}}
-		    	<li>
-		    	{{#item}} 
-		    		{{name}} 
-		    	{{/item}}
-		    	{{action}} {{time}}</li>
-			{{/events}}
-		</ul>
-	</div>
-  </body>
+    <title>Index</title>
+</head>
+<body>
+    <div class="top-bar">
+        <i class="material-icons">arrow_back</i> 
+        {{#category}}{{name}}{{/category}}
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-6" style="height: calc(100vh - 60px); overflow-y: auto;">
+                <div class="camera-container">
+                    <div class="camera-container-inner">
+                        <span>Live stream</span>
+                        <div class="live-badge">LIVE</div>
+                        {{#entry}}
+                            <script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
+                        {{/entry}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-6" style="height: calc(100vh - 60px); overflow-y: auto;">
+                <div class="events-log">
+                    {{#events}}
+                        <div class="event-log-item">
+                            {{#item}} 
+                                <span>{{name}} {{action}}</span>
+                            {{/item}}
+                            <span class="time">{{time}}</span>
+                        </div>
+                    {{/events}}
+                </div>
+            </div>
+        </div>
+        <div class="row events-clips-container">
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot green"></div>
+                <div class="processing">Processing...</div>
+            </div>
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot green"></div>
+            </div>
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot"></div>
+            </div>
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot"></div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

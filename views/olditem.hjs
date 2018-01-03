@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>kSmart</title>	    
+    <link rel="stylesheet" href="stylesheets/style.css" />
+    
+	<script src="javascripts/jquery-1.7.min.js"></script>
+    <!--
+	<script src="javascripts/KalturaClient.min.js"></script>
+	<script src="javascripts/KalturaCategoryService.min.js"></script>
+	-->
+	
+    <script type="text/javascript">
+    	
+    	/*
+		var config = new KalturaConfiguration();
+		config.serviceUrl = "{{ serviceUrl }}";
+		
+		var client = new KalturaClient(config);
+		client.setKs("{{ ks }}");
+		*/
+
+    	$(function() {
+    	});
+
+    </script>
+    <style>
+    h1 {
+        color: orange;
+    }
+
+    categoriesStyle {
+     text-transform: uppercase;
+     font-weight: bold;
+      font-size: 40px;
+      text-align: center;
+      color: red;
+    }
+    </style>
+  </head>
+  <body>
+    {{#category}}
+		<h1><a href="category?id={{id}}">{{name}}</a></h1>    	
+	{{/category}}
+ 	{{#thumb}}
+		<img src="{{thumbnailUrl}}" />
+	{{/thumb}}
+ 	{{#item}}
+		<img src="{{thumbnailUrl}}" />
+			{{name}}
+			{{#lanes}}
+				{{grabs}}/{{misplacements}}/{{sales}}
+			{{/lanes}}
+	{{/item}}
+    <div id="liveStreams">
+	    <ul>
+	    {{#events}}
+	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41406521/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
+		{{/events}}
+	    </ul>
+	</div>
+  </body>
+</html>
