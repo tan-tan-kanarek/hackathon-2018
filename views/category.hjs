@@ -81,12 +81,25 @@
 	    	</td>
 		{{/liveStreams}}
         <script>
-            function jsCallbackReady(){
+        	var playersCount = 0;
+            {{#liveStreams}}
+            	playersCount++;
+         	{{/liveStreams}}
+         
+	        function jsCallbackReady(){
+	        	playersCount--;
+	        	if(playersCount === 0) {
+	        		allPlayersReady()
+	        	}
+	        }
+	        
+            function allPlayersReady(){
 	            {{#liveStreams}}
-                   var kdp = document.getElementById("kaltura_player_{{id}}");
-                   kdp.kBind( "doPause", function(){
+	            
+                   var kdp_{{id}} = document.getElementById("kaltura_player_{{id}}");
+                   kdp_{{id}}.kBind("doPause", function(){
                        document.location = "monitor?categoryId={{categoryId}}&id={{id}}";
-                    });
+                   });
                 {{/liveStreams}}
              }
          </script>
