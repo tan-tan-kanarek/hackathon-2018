@@ -91,9 +91,15 @@ function getMetadata(session) {
 				catList[i].rgbcolor = rgbcolorsList[i];
 				catList[i].index = i;
 			}
+
+			var itemsList = response[0].objects;
+			var itemsArrayLength = itemsList.length;
+			for (var indx = 0; indx < itemsArrayLength; indx++) {
+				itemsList[indx].index = indx;
+			}
 			resolve({
 				session: session,
-				items: response[0].objects,
+				items: itemsList,
 				categories: catList
 			});
 		}

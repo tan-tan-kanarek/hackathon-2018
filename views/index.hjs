@@ -222,7 +222,8 @@
     <tr>
 	    {{#items}}
 	    	<td>
-				<imageStyle class="item" data-url="item{{id}}">
+
+				<imageStyle class="item">
 					<a href="item?id={{id}}">
 				    	{{#relatedObjects}}
 				    		{{#thumbs}}
