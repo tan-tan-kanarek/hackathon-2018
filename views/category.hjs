@@ -53,15 +53,9 @@
 					{{/relatedObjects}}
 					{{name}}
 				</a>
-		    	{{#relatedObjects}}
-		    		{{#thumbs}}
-		    			{{#objects}}
-							{{#lanes}}
-								{{events}}/{{purchased}}
-							{{/lanes}}
-						{{/objects}}
-					{{/thumbs}}
-				{{/relatedObjects}}
+				{{#lanes}}
+					{{grabs}}/{{misplacements}}/{{sales}}
+				{{/lanes}}
 			</li>
 		{{/items}}
 	    </ul>

@@ -49,7 +49,7 @@
 		<img src="{{thumbnailUrl}}" />
 			{{name}}
 			{{#lanes}}
-				{{events}}/{{purchased}}
+				{{grabs}}/{{misplacements}}/{{sales}}
 			{{/lanes}}
 	{{/item}}
     <div id="liveStreams">
