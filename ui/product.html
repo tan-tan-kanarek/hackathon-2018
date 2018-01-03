@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <title>Index</title>
+</head>
+<body>
+    <div class="top-bar">
+        <i class="material-icons">arrow_back</i> Toys
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-4" style="padding: 24px;">
+                <div class="product" style="width: 100%; margin: 0; float: none; background-image: url('http://www.hanksclothing.com/media/zoom/resized/12006rbp-1_size0.jpg')">
+                    <div class="product-ratio-keeper"></div>
+                    <div class="product-event-counter green">3</div>
+                </div>
+                <h1 class="product-title">Blue Teddybear</h1>
+            </div>
+            <div class="col-8" style="padding-top: 24px;">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+                <canvas id="myChart" width="400" height="200"></canvas>
+                <script>
+                    var ctx = document.getElementById("myChart").getContext('2d');
+                    var chart = new Chart(ctx, {
+                        // The type of chart we want to create
+                        type: 'line',
+                    
+                        // The data for our dataset
+                        data: {
+                            labels: ["00:01", "06:00", "12:00", "18:00", "00:00"],
+                            datasets: [{
+                                label: "Grabbbed",
+                                backgroundColor: 'rgb(69, 39, 160)',
+                                borderColor: 'rgb(69, 39, 160)',
+                                data: [6, 3, 8, 2, 7],
+                            },
+                            {
+                                label: "Purchases",
+                                backgroundColor: 'rgb(255, 109, 0)',
+                                borderColor: 'rgb(255, 109, 0)',
+                                data: [5, 4, 5, 1, 9],
+                            },
+                            {
+                                label: "Sales",
+                                backgroundColor: 'rgb(178, 223, 219)',
+                                borderColor: 'rgb(178, 223, 219)',
+                                data: [5, 10, 5, 2, 13],
+                            }]
+                        },
+                    
+                        // Configuration options go here
+                        options: {}
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="row events-clips-container">
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot misplace-color"></div>
+                <div class="processing">Processing...</div>
+            </div>
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot misplace-color"></div>
+            </div>
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot grab-color"></div>
+            </div>
+            <div class="clip-container">
+                <div class="ratio-keeper-clip"></div>
+                <div class="clip-container-dot grab-color"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,295 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+body {
+    background-color: #222;
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+    padding-top: 60px;
+}
+* {
+    box-sizing: border-box;
+}
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+.logo {
+    margin-top: 24px;
+    margin-bottom: 36px;
+}
+.top-bar {
+    position: fixed;
+    height: 60px;
+    width: 100%;
+    background-color: #000;
+    z-index: 10;
+    top: 0; left: 0;
+    padding: 0 16px;
+    line-height: 60px;
+    font-size: 16px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+.top-bar .material-icons {
+    margin-right: 16px;
+}
+.container {
+    margin: 0px auto;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    padding-top: 8px;
+    max-width: 1024px;
+}
+a {
+    color: #fff;
+    text-decoration: none;
+}
+.section-title {
+    font-size: 18px;
+    padding: 8px 4px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    border-bottom: solid 1px #333;
+}
+.categories:after {
+    clear: both;
+    content: ' ';
+    display: block;
+}
+.categories .category-item a {
+    text-align: center;
+    display: block;
+    line-height: 100px;
+    background-color: #111;
+    text-transform: uppercase;
+    font-size: 18px;
+    letter-spacing: 2px;
+    border-radius: 3px;
+}
+.categories .category-item {
+    position: relative;
+    width: 100%;
+    margin-bottom: 4px;
+    height: 100px;
+}
+.categories .category-item .items-count {
+    font-size: 12px;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    color: rgba(255,255,255,0.7);
+}
+.categories a:hover {
+    background-color: #252525;
+}
+.categories .category-item:hover .items-count {
+    color: rgba(255,255,255,0.7);
+}
+.categories .category-item:hover .items-count span {
+    display: inline;
+}
+
+.categories .category-item.style-1 a {
+    background-color: #7eb5d6;
+    color: #fff;
+}
+.categories .category-item.style-2 a {
+    background-color: #2a75a9;
+    color: #fff;
+}
+.categories .category-item.style-3 a {
+    background-color: #274257;
+    color: #fff;
+}
+.categories .category-item.style-4 a {
+    background-color: #dfc184;
+    color: #fff;
+}
+.categories .category-item.style-5 a {
+    background-color: #8f6048;
+    color: #fff;
+}
+.categories .category-item.style-6 a {
+    background-color: #644436;
+    color: #fff;
+}
+.row:after {
+    content: ' ';
+    clear: both;
+    display: block;
+}
+.col-6 {
+    float: left;
+    width: 50%;
+    padding: 0 8px;
+}
+.col-8 {
+    float: left;
+    width: 70%;
+    padding: 0 8px;
+}
+.col-4 {
+    float: left;
+    width: 30%;
+    padding: 0 8px;
+}
+.camera-container {
+    justify-content: center;
+    position: relative;
+    padding-bottom: 75%;
+    background-color: #111;
+    border-radius: 4px;
+}
+.camera-container span {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+}
+.dashboard-products {
+    margin-top: 24px;
+}
+.product {
+    width: calc(25% - 24px);
+    border-radius: 3px;
+    float: left;
+    background-size: cover;
+    background-position: 50% 50%;
+    position: relative;
+    margin-right: 24px;
+    margin-bottom: 30px;
+}
+.product-ratio-keeper {
+    padding-bottom: 100%;
+}
+.product-event-counter {
+    position: absolute;
+    top: -4px; right: -4px;
+    border-radius: 50%;
+    background-color: #d81b60;
+    width: 24px; height: 24px;
+    font-size: 12px;
+    text-align: center;
+    line-height: 24px;
+}
+.event-circle {
+    width: 12px; height: 12px;
+    background-color: #d81b60;
+    display: inline-block;
+    margin-right: 8px;
+    border-radius: 50%;
+}
+.events-log {
+    /* background-color: #000; */
+    border-radius: 4px;
+    height: 60vh;
+    overflow-y: auto;
+    font-size: 14px;
+    /* padding: 8px 0; */
+}
+.event-log-item {
+    padding: 16px;
+}
+.event-log-item .time {
+    float: right;
+    opacity: 0.5;
+}
+.events-clips-container {
+    bottom: 0; left: 0;
+    background-color: #111;
+    width: 100%;
+    position: fixed;
+    white-space: nowrap;
+    overflow-x: auto;
+    padding: 16px 0;
+}
+.clip-container:first-child {
+    margin-left: 16px;
+}
+.clip-container:last-child {
+    margin-right: 16px;
+}
+.clip-container {
+    display: inline-block;
+    position: relative;
+    width: 250px;
+    border-radius: 3px;
+    background-color: #222;
+    margin: 0 8px;
+}
+.ratio-keeper-clip {
+    padding-bottom: 75%;
+}
+.clip-container-dot {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 16px; height: 16px;
+    background-color: #d81b60;
+    display: inline-block;
+    border-radius: 50%;
+}
+.processing {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate3d(-50%,-50%,0);
+    font-size: 12px;
+    opacity: 0.7;
+}
+.green {
+    background-color: #43a047;
+}
+.orange {
+    background-color: #fb8c00;
+}
+.purple {
+    background-color: #5e35b1;
+}
+.live-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    display: inline-block;
+    padding: 2px 10px;
+    background-color: red;
+    color: #fff;
+    font-size: 10px;
+    letter-spacing: 2px;
+    border-radius: 3px;
+}
+.product-title {
+    font-size: 18px;
+    color: #fff;
+    margin: 0; padding: 0;
+    margin-top: 16px;
+}
+.grab-color {
+    background-color: #5e35b1;
+}
+.misplace-color {
+    background-color: #fb8c00;
+}
+.sale-color {
+    background-color: rgb(178, 223, 219);
+}
