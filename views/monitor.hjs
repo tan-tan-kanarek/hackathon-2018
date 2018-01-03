@@ -30,25 +30,37 @@
 
 			socket.on('motion-start', function(time) {
 				console.log('motion-start');
-				addEvent('Motion detected' + time);
+				addEvent('Motion detected', 'motion-start', time);
 				$('#kaltura_player').addClass('alert');
 			});
 
 			socket.on('motion-end', function(time) {
 				console.log('motion-end');
-				addEvent('Motion stopped' + time);
+				addEvent('Motion stopped', 'motion-end', time);
 				$('#kaltura_player').removeClass('alert');
 			});
 
 			socket.on('new-event', function(eventData) {
 				console.log('new-event', eventData);
-				addEvent(eventData.name + ' ' + eventData.action + ' ' + eventData.time);
+				addEvent(eventData.name + ' ' + eventData.action, eventData.action, eventData.time);
 				$('#kaltura_player').removeClass('alert');
+				$('#eventsClips').prepend('<div class="clip-container"><div class="ratio-keeper-clip"></div><div class="clip-container-dot green"></div><div id="' + eventData.id + '" style="width: 400px; height: 333px;"></div></div>');
+								
+				kWidget.embed({
+					targetId: "kaltura_player_" + eventData.id, 
+					wid: "_{{partnerId}}", 
+					uiconf_id: 41406521, 
+					flashvars: { 
+						streamerType: "auto" 
+					}, 
+					cache_st: 1514921699, 
+					entry_id: eventData.id
+				}); 
 			});
 		}
 		
-		function addEvent(txt) {
-			$('#eventsLog').prepend('<div class="event-log-item"><div class="event-circle grab-color"></div><span>' + txt + '</span><span class="time">04:55pm</span></div>');
+		function addEvent(txt, action, time) {
+			$('#eventsLog').prepend('<div class="event-log-item"><div class="event-circle ' + action + '-color"></div><span>' + txt + '</span><span class="time">' + time + '</span></div>');
 		}
 
 		function follow() {
@@ -86,10 +98,11 @@
                 </div>
             </div>
             <div class="col-6" style="height: calc(100vh - 60px); overflow-y: auto;">
-                <div class="events-log">
+                <div class="events-log" id="eventsLog">
                     {{#events}}
                         <div class="event-log-item">
                             {{#item}} 
+                        		<div class="event-circle {{action}}-color"></div>
                                 <span>{{name}} {{action}}</span>
                             {{/item}}
                             <span class="time">{{time}}</span>
@@ -98,24 +111,14 @@
                 </div>
             </div>
         </div>
-        <div class="row events-clips-container">
-            <div class="clip-container">
-                <div class="ratio-keeper-clip"></div>
-                <div class="clip-container-dot green"></div>
-                <div class="processing">Processing...</div>
-            </div>
-            <div class="clip-container">
-                <div class="ratio-keeper-clip"></div>
-                <div class="clip-container-dot green"></div>
-            </div>
-            <div class="clip-container">
-                <div class="ratio-keeper-clip"></div>
-                <div class="clip-container-dot"></div>
-            </div>
-            <div class="clip-container">
-                <div class="ratio-keeper-clip"></div>
-                <div class="clip-container-dot"></div>
-            </div>
+        <div class="row events-clips-container" id="eventsClips">
+            {{#events}}
+	            <div class="clip-container">
+	                <div class="ratio-keeper-clip"></div>
+	                <div class="clip-container-dot green"></div>
+               		<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41406521/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
+	            </div>
+            {{/events}}
         </div>
     </div>
 </body>

@@ -295,12 +295,22 @@ a {
     margin: 0; padding: 0;
     margin-top: 16px;
 }
-.grab-color {
+.grabbed-color {
     background-color: #5e35b1;
 }
-.misplace-color {
+.misplaced-color {
     background-color: #fb8c00;
+}
+.motion-start-color {
+    background-color: #d81b60;
+}
+.motion-end-color {
+    background-color: #43a047;
 }
 .sale-color {
     background-color: rgb(178, 223, 219);
+}
+
+.alert {
+	border: 5px #d81b60 solid;
 }

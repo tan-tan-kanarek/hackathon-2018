@@ -72,40 +72,24 @@ function getMetadata(session, entryId, categoryId) {
     return new Promise((resolve, reject) => {
 
     	var eventsFilter = new kaltura.objects.MediaEntryFilter({
-    		categoryAncestorIdIn: categoryId,
-    		tagsLike: "event",
+    		tagsMultiLikeAnd: `event,${entryId}`,
     		createdAtGreaterThanOrEqual: yesterday,
     		statusIn: kaltura.enums.EntryStatus.NO_CONTENT + "," + kaltura.enums.EntryStatus.READY + "," + kaltura.enums.EntryStatus.IMPORT + "," + kaltura.enums.EntryStatus.PRECONVERT,
     		orderBy: kaltura.enums.MediaEntryOrderBy.CREATED_AT_DESC
     	});
 
     	var relatedEventsFilter = new kaltura.objects.MediaEntryFilter({
-    		tagsLike: "event",
+    		tagsMultiLikeOr: `event,${entryId}`,
     		createdAtGreaterThanOrEqual: yesterday,
     		statusIn: kaltura.enums.EntryStatus.NO_CONTENT + "," + kaltura.enums.EntryStatus.READY + "," + kaltura.enums.EntryStatus.IMPORT + "," + kaltura.enums.EntryStatus.PRECONVERT
     	});
 
         var itemsFilter = new kaltura.objects.CategoryFilter({
-        	parentIdEqual: categoryId
+    		fullNameStartsWith: "Market>",
+    		tagsLike: "item"
         });
 
-    	var entryFilterMapping = new kaltura.objects.ResponseProfileMapping({
-    		filterProperty: "categoriesIdsMatchAnd",
-    		parentProperty: "id"
-    	});
-
-    	var eventsResponseProfile = new kaltura.objects.DetachedResponseProfile({
-    		name: "events",
-    		filter: relatedEventsFilter,
-    		mappings: [entryFilterMapping]
-    	});
-    
-    	var responseProfile = new kaltura.objects.DetachedResponseProfile({
-    		relatedProfiles: [eventsResponseProfile]
-    	});
-
     	kaltura.services.category.listAction(itemsFilter)
-		.setResponseProfile(responseProfile)
         .add(kaltura.services.category.get(categoryId))
         .add(kaltura.services.liveStream.get(entryId))
         .add(kaltura.services.media.listAction(eventsFilter))
@@ -116,23 +100,15 @@ function getMetadata(session, entryId, categoryId) {
             	var category = response[1];
             	var entry = response[2];
             	var events = response[3].objects;
-            	var eventsItems = {};
-            	
+
+            	var itemsList = {};
             	for(var i = 0; i < items.length; i++) {
-            		var item = items[i];
-            		var itemEvents = item.relatedObjects.events.objects;
-            		
-            		for(var j = 0; j < itemEvents.length; j++) {
-            			eventsItems[itemEvents[j].id] = item;
-            		}
+            		itemsList[items[i].id] = items[i];
             	}
-            	
+                	
             	for(var i = 0; i < events.length; i++) {
-            		if(!eventsItems[events[i].id]) {
-            			continue;
-            		}
             		
-            		events[i].item = eventsItems[events[i].id];
+            		events[i].item = itemsList[events[i].categoriesIds];
             		
             		var d = new Date(events[i].createdAt * 1000);
             		events[i].time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
@@ -140,7 +116,7 @@ function getMetadata(session, entryId, categoryId) {
     				if(events[i].tags.indexOf("grab") >= 0) {
     					events[i].action = "grabbed";
     				}
-    				if(events[i].tags.indexOf("misplacement") >= 0) {
+    				if(events[i].tags.indexOf("misplaced") >= 0) {
     					events[i].action = "misplaced";
     				}
             	}

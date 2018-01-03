@@ -234,13 +234,13 @@ function getUrlContent(url) {
 	});
 }
 
-function createEntry(filepath, stats, name, categoryId) {
+function createEntry(filepath, stats, action, categoryId, liveStreamId) {
 	
 	let entry = new kaltura.objects.MediaEntry({
-		name: name,
+		name: action,
 		categoriesIds: categoryId,
-		mediaType: kaltura.enums.MediaType.VIDEO 
-		
+		mediaType: kaltura.enums.MediaType.VIDEO, 
+		tags: `event,${action},${liveStreamId}`
 	});
 	let uploadToken = new kaltura.objects.UploadToken({
 		fileName: path.basename(filepath),
@@ -362,7 +362,7 @@ function processMotion(stats, categoryId, detectedObjects, lastDetections) {
     		}
 
     		eventItems.push({
-    			name: action, 
+    			action: action, 
     			categoryId: itemId
     		});
     	}
@@ -432,7 +432,7 @@ function addSource(entryId, url) {
     		detectedObjects = {};
     		
     		for(var i = 0; i < eventItems.length; i++) {
-    			createEntry(filepath, stats, eventItems[i].name, eventItems[i].categoryId)
+    			createEntry(filepath, stats, eventItems[i].action, eventItems[i].categoryId, entryId)
     			.then(({entry, categoryId}) => {
     				
     				var item = items[categoryId];
@@ -440,6 +440,7 @@ function addSource(entryId, url) {
     				var time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
 
     				onEntryEvent(entryId, 'new-event', {
+    					id: entry.id,
     					action: entry.name,
     					name: item.name,
     					time: time
