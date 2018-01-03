@@ -78,16 +78,19 @@
 	        <td>
 	        <h2>{{name}}</h2>
 	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
-            <script>
-            function jsCallbackReady(){
-            	    	   var kdp = document.getElementById("kaltura_player_{{id}}");
-                           kdp.kBind( "doPause", function(){
-                               document.location = "monitor?categoryId={{categoryId}}&id={{id}}";
-                           	});
-             }
-             </script>
 	    	</td>
 		{{/liveStreams}}
+        <script>
+            function jsCallbackReady(){
+	            {{#liveStreams}}
+                   var kdp = document.getElementById("kaltura_player_{{id}}");
+                   kdp.kBind( "doPause", function(){
+                       document.location = "monitor?categoryId={{categoryId}}&id={{id}}";
+                    });
+                {{/liveStreams}}
+             }
+         </script>
+
 		</tr>
 		<table>
 	    </ul>
