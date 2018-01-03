@@ -144,6 +144,7 @@
       color: white;
       margin-left: 20px;
       height: 90px;
+
     }
 
     imageStyle {
@@ -172,7 +173,7 @@
 	    <ul>
 	    {{#categories}}
 	    <div style="background-color:{{rgbcolor}}; width: 450px;">
-			<categoriesStyle  class="category"><a href="category?id={{id}}">{{name}}</a> <br></categoriesStyle>
+			<categoriesStyle class="category"><a style="text-decoration: none;" href="category?id={{id}}">{{name}}</a> <br></categoriesStyle>
 		<div>
 		{{/categories}}
 	    </ul>
