@@ -82,7 +82,7 @@ module.exports = app;
 
 app.io.on("connection", function(socket)
 {
-    console.log("A user connected");
+    console.log("Monitor connected");
     
     socket.on("follow", (entryId) => {
     	console.log(`Following [${entryId}]`);
@@ -254,7 +254,7 @@ function createEntry(filepath, stats, name, categoryId) {
 	.add(kaltura.services.media.add(entry))
 	.add(kaltura.services.media.addContent('{2:result:id}', contentResource))
 	.add(kaltura.services.uploadToken.upload('{1:result:id}', filepath));
-	
+
 	return new Promise((resolve, reject) => {
     	multiRequest
     	.execute(client, (success, response) => {
@@ -337,10 +337,10 @@ function isDifferent(a, b) {
 }
 
 function processMotion(stats, categoryId, detectedObjects, lastDetections) {
-	
+
 	return new Promise((resolve, reject) => {
 		var eventItems = [];
-		
+
     	for(var itemId in detectedObjects) {
     		var detections = detectedObjects[itemId];
     		if(detections.length <= 1) {
@@ -360,17 +360,17 @@ function processMotion(stats, categoryId, detectedObjects, lastDetections) {
     		else {
     			continue;
     		}
-    
+
     		eventItems.push({
     			name: action, 
     			categoryId: itemId
     		});
-    		
-    		resolve({
-    			stats: stats,
-    			eventItems: eventItems
-    		});
     	}
+
+		resolve({
+			stats: stats,
+			eventItems: eventItems
+		});
     });
 }
 
@@ -417,7 +417,10 @@ function addSource(entryId, url) {
 		
 		inMotion++;
 		console.log(`Motion start [${entryId}]`);
-		onEntryEvent(entryId, 'motion-start');
+
+		var d = new Date();
+		var time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
+		onEntryEvent(entryId, 'motion-start', time);
 		
     }).on('record-stop', (filepath) => {
 
@@ -425,10 +428,13 @@ function addSource(entryId, url) {
     	statFile(filepath)
     	.then((stats) => processMotion(stats, source.categoryId, detectedObjects, lastDetections))
     	.then(({stats, eventItems}) => {
+
+    		detectedObjects = {};
     		
     		for(var i = 0; i < eventItems.length; i++) {
     			createEntry(filepath, stats, eventItems[i].name, eventItems[i].categoryId)
     			.then(({entry, categoryId}) => {
+    				
     				var item = items[categoryId];
     				var d = new Date(entry.createdAt * 1000);
     				var time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
@@ -438,15 +444,19 @@ function addSource(entryId, url) {
     					name: item.name,
     					time: time
     				});
-    			});
+    			})
+    	    	.catch((err) => console.error(err));
     		}
     		
-    	});
-    	
-		console.log(`Motion end [${entryId}]`);
-		detectedObjects = {};
+    	})
+    	.catch((err) => console.error(err));
+
 		demo = 0; // TODO remove
-		onEntryEvent(entryId, 'motion-end');
+		
+		console.log(`Motion end [${entryId}]`);
+		var d = new Date();
+		var time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
+		onEntryEvent(entryId, 'motion-end', time);
 		
     }).on('capture', (filepath) => {
     	
@@ -473,6 +483,9 @@ function addSource(entryId, url) {
         	    		detectedObjects[detection.itemId].push(detection);
         			}
         		}
+        	}
+        	else {
+        		console.log(`Object detected on missing item id`, detection);
         	}
     	}
     	

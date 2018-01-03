@@ -41,15 +41,15 @@
 				console.error(err);
 			});
 
-			socket.on('motion-start', function() {
+			socket.on('motion-start', function(time) {
 				console.log('motion-start');
-				addEvent('Motion detected');
+				addEvent('Motion detected' + time);
 				$('#kaltura_player').addClass('alert');
 			});
 
-			socket.on('motion-end', function() {
+			socket.on('motion-end', function(time) {
 				console.log('motion-end');
-				addEvent('Motion stopped');
+				addEvent('Motion stopped' + time);
 				$('#kaltura_player').removeClass('alert');
 			});
 
