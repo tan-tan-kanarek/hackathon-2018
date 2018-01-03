@@ -136,6 +136,13 @@
         color: white;
     }
 
+    .box {
+        display: flex;
+        flex-wrap: row wrap;
+        float:right;
+        width: 33.3333%;
+    }
+
     categoriesStyle {
      text-transform: uppercase;
      font-weight: bold;
@@ -190,30 +197,34 @@
  </div>
  </tr>
  	<tr>
- 		<td colspan="3" height="20"></td>
+ 	<td colspan="3" height="20"></td>
  	</tr>
- 		<tr>
-    		<td colspan="3" height="20"></td>
-    	</tr>
+ 	<tr>
+    <td colspan="3" height="20"></td>
+    </tr>
  </table>
 <table align="right">
- 	<tr>
- 		<td colspan="3" height="20"></td>
- 	</tr>
- 		<tr>
-    		<td colspan="3" height="20"></td>
-    	</tr>
-<tr>
- <div class="container">
-      <div class="row">
-    <div id="items" style="float:right; width: 33.3333%;">
 
+    <div  id="items" class="box">
+             <tr>
+            <td colspan="3" height="40"></td>
+            </tr>
+            <tr>
+         	<td colspan="3" height="40"></td>
+         	</tr>
+         	<tr>
+            <td colspan="3" height="40"></td>
+            </tr>
+            <tr>
+            <td colspan="3" height="40"></td>
+            </tr>
+        <tr>
 	    {{#items}}
 	    	{{#relatedObjects}}
 	    		{{#thumbs}}
 	    			{{#objects}}
 	    			<td>
-						<imageStyle class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" /></imageStyle>
+						<imageStyle class="item" data-url="item{{id}}"><img src="{{thumbnailUrl}}" style="padding: 2px 2px 2px 2px;"/></imageStyle>
 					</td>
 					{{/objects}}
 				{{/thumbs}}
@@ -221,9 +232,6 @@
 		{{/items}}
 
     </div>
-       </div>
-      </div>
-
 </tr>
 </table>
   </body>
