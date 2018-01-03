@@ -148,6 +148,7 @@ router.get('/', function(req, res, next) {
     .then((session) => getMetadata(session, entryId, categoryId))
     .then(({session, entry, category, events}) => res.render('monitor', {
     	ks: session, 
+    	partnerId: partnerId,
     	serviceUrl: serviceUrl, 
     	entryId: entryId,
     	entry: entry, 

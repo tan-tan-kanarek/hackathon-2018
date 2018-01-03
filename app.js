@@ -240,7 +240,8 @@ function createEntry(filepath, stats, action, categoryId, liveStreamId) {
 		name: action,
 		categoriesIds: categoryId,
 		mediaType: kaltura.enums.MediaType.VIDEO, 
-		tags: `event,${action},${liveStreamId}`
+		tags: `event,${action},${liveStreamId}`,
+		conversionProfileId: 9261601
 	});
 	let uploadToken = new kaltura.objects.UploadToken({
 		fileName: path.basename(filepath),
