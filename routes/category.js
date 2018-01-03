@@ -94,7 +94,8 @@ function getMetadata(session, parentId) {
         });
 
         var liveStreamsFilter = new kaltura.objects.LiveStreamEntryFilter({
-        	categoriesIdsMatchAnd: parentId
+        	categoriesIdsMatchAnd: parentId,
+			orderBy: kaltura.enums.LiveStreamEntryOrderBy.CREATED_AT_ASC
         });
     
     	var thumbnailsFilter = new kaltura.objects.MediaEntryFilter({
