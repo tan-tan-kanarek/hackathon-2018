@@ -15,6 +15,7 @@
     "kaltura-client": "^1.0.8",
     "md5": "^2.2.1",
     "morgan": "~1.9.0",
-    "serve-favicon": "~2.4.5"
+    "serve-favicon": "~2.4.5",
+    "uniqid": "^4.1.1"
   }
 }

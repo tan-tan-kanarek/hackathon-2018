@@ -20,6 +20,10 @@ const monitor = require('./routes/monitor');
 const category = require('./routes/category');
 
 
+const yolo = './darknet';
+const yoloData = 'cfg/easy.data';
+const yoloConfig = 'cfg/easy.cfg';
+const yoloWeights = '/home/ram/Documents/easy-yolo/backup/easy_final.weights';
 
 
 
@@ -275,62 +279,74 @@ function createEntry(filepath, stats, action, categoryId, liveStreamId) {
 
 var demo = 0; // TODO remove
 function detect(filepath) {
-	// TODO run YOLO
-	switch(demo) {
-		case 0:
-			return [{
-				itemId: 83635861,
-				x: 30,
-				y: 40,
-				width: 300,
-				height: 60
-			}];
 
-		case 1:
-			return [{
-				itemId: 83635861,
-				x: 60,
-				y: 10,
-				width: 300,
-				height: 60
-			}];
-			
-		case 2:
-			return [{
-				itemId: 83604851,
-				x: 30,
-				y: 40,
-				width: 300,
-				height: 60
-			}];
-			
-		case 3:
-			return [{
-				itemId: 83623341,
-				x: 30,
-				y: 40,
-				width: 300,
-				height: 60
-			}];
-			
-		case 4:
-			return [{
-				itemId: 83623341,
-				x: 40,
-				y: 100,
-				width: 300,
-				height: 60
-			}];
-			
-		default:
-			return [{
-				itemId: 83623341,
-				x: 40,
-				y: 100,
-				width: 300,
-				height: 60
-			}];
-	}
+	return new Promise((resolve, reject) => {
+		
+    	/*
+    	TODO run YOLO
+
+		let cmd = `${yolo} detector test ${yoloData} ${yoloConfig} ${yoloWeights} ${filepath}`;
+		cmd.exec((stdout, stderr) => {
+			resolve(JSON.parse(stdout));
+		});
+		*/
+		
+    	switch(demo) {
+    		case 0:
+    			resolve([{
+    				itemId: 83635861,
+    				x: 30,
+    				y: 40,
+    				width: 300,
+    				height: 60
+    			}]);
+    
+    		case 1:
+    			resolve([{
+    				itemId: 83635861,
+    				x: 60,
+    				y: 10,
+    				width: 300,
+    				height: 60
+    			}]);
+    			
+    		case 2:
+    			resolve([{
+    				itemId: 83604851,
+    				x: 30,
+    				y: 40,
+    				width: 300,
+    				height: 60
+    			}]);
+    			
+    		case 3:
+    			resolve([{
+    				itemId: 83623341,
+    				x: 30,
+    				y: 40,
+    				width: 300,
+    				height: 60
+    			}]);
+    			
+    		case 4:
+    			resolve([{
+    				itemId: 83623341,
+    				x: 40,
+    				y: 100,
+    				width: 300,
+    				height: 60
+    			}]);
+    			
+    		default:
+    			resolve([{
+    				itemId: 83623341,
+    				x: 40,
+    				y: 100,
+    				width: 300,
+    				height: 60
+    			}]);
+    	}
+    });
 }
 
 function isDifferent(a, b) {
@@ -466,30 +482,32 @@ function addSource(entryId, url) {
     		return;
     	}
     	
-    	var detections = detect(filepath);
+    	detect(filepath)
+    	.then((detections) => {
+        	lastDetections = {};
+        	for(var i = 0; i < detections.length; i++) {
+        		var detection = detections[i];
+            	if(items[detection.itemId]) {
+            		console.log(`Object detected [${entryId}]`, detection);
+            		
+            		lastDetections[detection.itemId] = true;
+            		
+            		if(!detectedObjects[detection.itemId]) {
+            			detectedObjects[detection.itemId] = [detection];
+            		}
+            		else {
+            			var lastDetection = detectedObjects[detection.itemId][detectedObjects[detection.itemId].length - 1];
+            			if(isDifferent(lastDetection, detection)) {
+            	    		detectedObjects[detection.itemId].push(detection);
+            			}
+            		}
+            	}
+            	else {
+            		console.log(`Object detected on missing item id`, detection);
+            	}
+        	}
+    	});
     	demo++; // TODO remove
-    	lastDetections = {};
-    	for(var i = 0; i < detections.length; i++) {
-    		var detection = detections[i];
-        	if(items[detection.itemId]) {
-        		console.log(`Object detected [${entryId}]`, detection);
-        		
-        		lastDetections[detection.itemId] = true;
-        		
-        		if(!detectedObjects[detection.itemId]) {
-        			detectedObjects[detection.itemId] = [detection];
-        		}
-        		else {
-        			var lastDetection = detectedObjects[detection.itemId][detectedObjects[detection.itemId].length - 1];
-        			if(isDifferent(lastDetection, detection)) {
-        	    		detectedObjects[detection.itemId].push(detection);
-        			}
-        		}
-        	}
-        	else {
-        		console.log(`Object detected on missing item id`, detection);
-        	}
-    	}
     	
     });
 	
