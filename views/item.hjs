@@ -9,7 +9,10 @@
 </head>
 <body>
     <div class="top-bar">
-        <i class="material-icons">arrow_back</i> Toys
+        <i class="material-icons">arrow_back</i>
+        {{#category}}
+        <a href="category?id={{id}}">{{name}}</a>
+        {{/category}}
     </div>
     <div class="container">
         <div class="row">
