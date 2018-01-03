@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>kSmart</title>	    
+    <link rel="stylesheet" href="stylesheets/style.css" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="javascripts/jquery-1.7.min.js"></script>
+    <!--
+	<script src="javascripts/KalturaClient.min.js"></script>
+	<script src="javascripts/KalturaCategoryService.min.js"></script>
+	-->
+	
+    <script type="text/javascript">
+    	
+    	/*
+		var config = new KalturaConfiguration();
+		config.serviceUrl = "{{ serviceUrl }}";
+		
+		var client = new KalturaClient(config);
+		client.setKs("{{ ks }}");
+		*/
+
+		function noStream()
+		{
+			console.log('Access to camera was denied!');
+		}
+		
+		function gotStream(stream)
+		{
+			var myButton = document.getElementById('buttonStart');
+			if (myButton) {
+				myButton.disabled = true;
+			}
+			
+			videoStream = stream;
+			console.log('Got stream.');
+			
+			video.onerror = function () {
+				console.log('video.onerror');
+				if (video) stop();
+			};
+			stream.onended = noStream;
+			if (window.URL) {
+				video.src = window.URL.createObjectURL(stream);
+			}
+			else if (video.mozSrcObject !== undefined) {//FF18a
+				video.mozSrcObject = stream;
+				video.play();
+			}
+			else if (navigator.mozGetUserMedia) {//FF16a, 17a
+				video.src = stream;
+				video.play();
+			}
+			else if (window.URL) {
+				video.src = window.URL.createObjectURL(stream);
+			}
+			else {
+				video.src = stream;
+			}
+    		
+			capture();
+		}
+		
+    	function capture() {
+    		setTimeout(captureAndSearch, 1000);
+		}
+		
+    	function captureAndSearch() {
+    		canvas.width = video.videoWidth;
+    		canvas.height = video.videoHeight;
+    		canvas.getContext('2d').drawImage(video, 0, 0);
+    		
+    		var img = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+    		$.ajax({
+    	        url: "search",
+    	        type: "POST",
+    	        data: "{\"image\":\"" + img + "\"}",
+    	        contentType: "application/json; charset=utf-8",
+    	        dataType: "json",
+    	        success: function (itemId) {
+    	        	console.log('Image uploaded', itemId);
+    	        	if(itemId) {
+    	        		document.location = 'item?id=' + itemId;
+    	        	}
+    	        	else {
+    	        		capture();
+    	        	}
+    	        },
+    	        error: function () {
+    	        	console.log("Upload failed");
+    	        	capture();
+    	        }
+    	    });
+		}
+		
+    	function loadSearch() {
+			$('#searchButton').hide();
+			$('#video').show();
+
+    		if ((typeof window === 'undefined') || (typeof navigator === 'undefined')) {
+    			console.log('This page needs a Web browser with the objects window.* and navigator.*!');
+    		}
+    		else if (!video) {
+    			console.log('HTML context error!');
+    		}
+    		else {
+    			console.log('Get user media');
+    			if (navigator.getUserMedia) navigator.getUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.oGetUserMedia) navigator.oGetUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.mozGetUserMedia) navigator.mozGetUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.webkitGetUserMedia) navigator.webkitGetUserMedia({video:true}, gotStream, noStream);
+    			else if (navigator.msGetUserMedia) navigator.msGetUserMedia({video:true, audio:false}, gotStream, noStream);
+    			else console.log('getUserMedia() not available from your Web browser!');
+    		}
+    	}
+    	
+    	$(function() {
+    		$('#searchButton').click(() => loadSearch());
+    	});
+
+    </script>
+    <style>
+    h1 {
+        color: black;
+        text-align: center
+    }
+
+    h1 {
+        color: white;
+    }
+
+    .box {
+        display: flex;
+        flex-wrap: row wrap;
+        float:right;
+        width: 33.3333%;
+    }
+
+    categoriesStyle {
+     text-transform: uppercase;
+     font-weight: bold;
+      font-size: 40px;
+      text-align: center;
+      color: white;
+      margin-left: 20px;
+      height: 90px;
+
+    }
+
+    imageStyle {
+
+    }
+
+    body {
+        background-color: #303030;
+    }
+    </style>
+  </head>
+  <body>
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h1>kSmart</br></br></h1>
+        </div>
+    </div>
+
+<table>
+<tr>
+    <div  style="width:300px; float:left;" id="menu">
+
+	    <ul>
+	    {{#categories}}
+	    <div style="background-color:{{rgbcolor}}; width: 450px;">
+			<categoriesStyle class="category"><a style="text-decoration: none;" href="category?id={{id}}">{{name}}</a> <br></categoriesStyle>
+		<div>
+		{{/categories}}
+	    </ul>
+    </div>
+
+    <div style="width:300px; float:right;" id="search">
+        </br>
+    	<img src="images/search.jpg" id="searchButton" width="200" height="200 align="left""/>
+    	<video id="video" autoplay="autoplay" style="display: none" width="400" height="300"></video>
+    	<canvas id="canvas" style="display: none"></canvas>
+    </div>
+
+
+ </div>
+ </tr>
+ 	<tr>
+ 	<td colspan="3" height="20"></td>
+ 	</tr>
+ 	<tr>
+    <td colspan="3" height="20"></td>
+    </tr>
+
+ </table>
+<table align="right">
+ <tr>
+    <div  id="items">
+            <tr>
+            <td colspan="3" height="40"></td>
+            </tr>
+            <tr>
+         	<td colspan="3" height="40"></td>
+         	</tr>
+         	<tr>
+            <td colspan="3" height="40"></td>
+            </tr>
+            <tr>
+            <td colspan="3" height="40"></td>
+            </tr>
+    <tr>
+	    {{#items}}
+	    	<td>
+
+				<imageStyle class="item">
+					<a href="item?id={{id}}">
+				    	{{#relatedObjects}}
+				    		{{#thumbs}}
+				    			{{#objects}}<imageStyle class="item"><img src="{{thumbnailUrl}}" /></imageStyle>{{/objects}}
+							{{/thumbs}}
+						{{/relatedObjects}}
+					</a>
+				</imageStyle>
+			</td>
+		{{/items}}
+
+   </div>
+ </tr>
+ </table>
+  </body>
+</html>
