@@ -202,11 +202,12 @@
  	<tr>
     <td colspan="3" height="20"></td>
     </tr>
+
  </table>
 <table align="right">
-
-    <div  id="items" class="box">
-             <tr>
+ <tr>
+    <div  id="items">
+            <tr>
             <td colspan="3" height="40"></td>
             </tr>
             <tr>
@@ -218,7 +219,7 @@
             <tr>
             <td colspan="3" height="40"></td>
             </tr>
-        <tr>
+    <tr>
 	    {{#items}}
 	    	{{#relatedObjects}}
 	    		{{#thumbs}}
@@ -231,8 +232,8 @@
 			{{/relatedObjects}}
 		{{/items}}
 
-    </div>
-</tr>
-</table>
+   </div>
+ </tr>
+ </table>
   </body>
 </html>
