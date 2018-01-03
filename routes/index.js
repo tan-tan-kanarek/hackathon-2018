@@ -56,6 +56,7 @@ function getMetadata(session) {
 
     	var itemsFilter = new kaltura.objects.CategoryFilter({
     		fullNameStartsWith: "Market>",
+			orderBy: kaltura.enums.CategoryOrderBy.CREATED_AT_DESC,
     		tagsLike: "item"
     	});
     
