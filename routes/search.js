@@ -3,7 +3,7 @@
 const fs = require("fs");
 const express = require("express");
 const router = express.Router();
-const uniqid = require('uniqid')
+const uniqid = require('uniqid');
 
 const yolo = './darknet';
 const yoloData = 'cfg/easy.data';
