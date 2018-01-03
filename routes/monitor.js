@@ -173,6 +173,7 @@ router.get('/', function(req, res, next) {
     .then(({session, entry, category, events}) => res.render('monitor', {
     	ks: session, 
     	serviceUrl: serviceUrl, 
+    	entryId: entryId,
     	entry: entry, 
     	category: category,
     	events: events

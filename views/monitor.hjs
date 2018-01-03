@@ -10,6 +10,8 @@
 	<script src="javascripts/KalturaCategoryService.min.js"></script>
 	-->
 	
+	<script src="/socket.io/socket.io.js"></script>
+
     <script type="text/javascript">
     	
     	/*
@@ -20,11 +22,68 @@
 		client.setKs("{{ ks }}");
 		*/
 
+		let socket;	
+		
+
+		function init() {
+			socket = io();
+
+			socket.on('connect', function() {
+				console.log('Socket.io connected');
+				follow();
+			});
+
+			socket.on('error', function(err) {
+				console.error('Socket.io error:', err);
+			});
+
+			socket.on('errorMessage', function(err) {
+				console.error(err);
+			});
+
+			socket.on('motion-start', function() {
+				console.log('motion-start');
+				addEvent('Motion detected');
+				$('#kaltura_player').addClass('alert');
+			});
+
+			socket.on('motion-end', function() {
+				console.log('motion-end');
+				addEvent('Motion stopped');
+				$('#kaltura_player').removeClass('alert');
+			});
+
+			socket.on('new-event', function(eventData) {
+				console.log('new-event', eventData);
+				addEvent(eventData.name + ' ' + eventData.action + ' ' + eventData.time);
+				$('#kaltura_player').removeClass('alert');
+			});
+		}
+		
+		function addEvent(txt) {
+			$('#eventsLog').prepend('<li>' + txt + '</li>');
+		}
+
+		function follow() {
+			send('follow', "{{entryId}}");
+		}
+
+		function send(type, data) {
+			console.log('Sending [' + type + ']: ', data);
+			socket.emit(type, data);
+		}
+
     	$(function() {
+    		init();
     	});
 
     </script>
     <style>
+    
+    .alert {
+    	border: 10px red solid;
+    }
+    
     h1 {
         color: orange;
     }
@@ -44,11 +103,11 @@
 	{{/category}}
     <div id="liveStream">
 	    {{#entry}}
-	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player_{{id}}&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
+	    	<script src="https://cdnapisec.kaltura.com/p/{{partnerId}}/sp/{{partnerId}}00/embedIframeJs/uiconf_id/41356661/partner_id/{{partnerId}}?autoembed=true&entry_id={{id}}&playerId=kaltura_player&cache_st=1514921699&width=400&height=333&flashvars[streamerType]=auto"></script>
 		{{/entry}}
 	</div>
     <div id="log">
-    	<ul>
+    	<ul id="eventsLog">
 		    {{#events}}
 		    	<li>
 		    	{{#item}} 

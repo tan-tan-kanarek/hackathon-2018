@@ -9,6 +9,7 @@ const motion = require('hls-motion-detect');
 const kaltura = require("kaltura-client");
 const express = require('express');
 const favicon = require('serve-favicon');
+const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
@@ -64,8 +65,36 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.io = socketIO();
+
 module.exports = app;
 
+
+
+
+
+
+
+
+/**********************************************
+ * Socket.io
+ **********************************************/
+
+app.io.on("connection", function(socket)
+{
+    console.log("A user connected");
+    
+    socket.on("follow", (entryId) => {
+    	console.log(`Following [${entryId}]`);
+    	socket.join(entryId);
+    });
+});
+
+function onEntryEvent(entryId, event, data) {
+	setTimeout(() => {
+		app.io.sockets.in(entryId).emit(event, data);
+	}, 10000);
+}
 
 
 
@@ -130,6 +159,7 @@ function startSession(widgetSession) {
  **********************************************/
 
 var recordingPath = './recorded';
+var items = {};
 
 if(!fs.existsSync(recordingPath)) {
 	fs.mkdirSync(recordingPath);
@@ -151,12 +181,6 @@ var detectServer = new motion.DetectServer({
     .on('stop', () => {
         console.log(`Source [${source.systemName}] stopped`);
     })
-    .on('record-start', (filepath) => {
-        console.log(`Source [${source.systemName}] started recording: ${filepath}`);
-    })
-    .on('record-stop', (filepath) => {
-        console.log(`Source [${source.systemName}] stopped recording`);
-    });
 })
 .on('source-removed', (systemName) => {
     console.log(`Source removed [${systemName}]`);
@@ -210,23 +234,271 @@ function getUrlContent(url) {
 	});
 }
 
+function createEntry(filepath, stats, name, categoryId) {
+	
+	let entry = new kaltura.objects.MediaEntry({
+		name: name,
+		categoriesIds: categoryId,
+		mediaType: kaltura.enums.MediaType.VIDEO 
+		
+	});
+	let uploadToken = new kaltura.objects.UploadToken({
+		fileName: path.basename(filepath),
+		fileSize: stats.size
+	});
+	let contentResource = new kaltura.objects.UploadedFileTokenResource({
+		token: '{1:result:id}'
+	});
+	
+	let multiRequest = kaltura.services.uploadToken.add(uploadToken)
+	.add(kaltura.services.media.add(entry))
+	.add(kaltura.services.media.addContent('{2:result:id}', contentResource))
+	.add(kaltura.services.uploadToken.upload('{1:result:id}', filepath));
+	
+	return new Promise((resolve, reject) => {
+    	multiRequest
+    	.execute(client, (success, response) => {
+    		if(success) {
+    			console.log('Entry created', response[1]);
+    			resolve({
+    				entry: response[1],
+    				categoryId: categoryId
+    			});
+    		}
+    		else {
+    			reject(response);
+    		}
+    	});
+	});
+}
+
+var demo = 0; // TODO remove
+function detect(filepath) {
+	// TODO run YOLO
+	switch(demo) {
+		case 0:
+			return [{
+				itemId: 83635861,
+				x: 30,
+				y: 40,
+				width: 300,
+				height: 60
+			}];
+
+		case 1:
+			return [{
+				itemId: 83635861,
+				x: 60,
+				y: 10,
+				width: 300,
+				height: 60
+			}];
+			
+		case 2:
+			return [{
+				itemId: 83604851,
+				x: 30,
+				y: 40,
+				width: 300,
+				height: 60
+			}];
+			
+		case 3:
+			return [{
+				itemId: 83623341,
+				x: 30,
+				y: 40,
+				width: 300,
+				height: 60
+			}];
+			
+		case 4:
+			return [{
+				itemId: 83623341,
+				x: 40,
+				y: 100,
+				width: 300,
+				height: 60
+			}];
+			
+		default:
+			return [{
+				itemId: 83623341,
+				x: 40,
+				y: 100,
+				width: 300,
+				height: 60
+			}];
+	}
+}
+
+function isDifferent(a, b) {
+	return (a.x != b.x || a.y != b.y || a.width != b.width || a.height != b.height)
+}
+
+function processMotion(stats, categoryId, detectedObjects, lastDetections) {
+	
+	return new Promise((resolve, reject) => {
+		var eventItems = [];
+		
+    	for(var itemId in detectedObjects) {
+    		var detections = detectedObjects[itemId];
+    		if(detections.length <= 1) {
+    			continue;
+    		}
+    		
+    		var item = items[itemId];
+    		var action;
+    		if(item.parentId == categoryId) {
+    			console.log(`Item [${item.name}] grabbed`);
+    			action = "grabbed";
+    		}
+    		else if(lastDetections[itemId]) {
+    			console.log(`Item [${item.name}] misplaced`);
+    			action = "misplaced";
+    		}
+    		else {
+    			continue;
+    		}
+    
+    		eventItems.push({
+    			name: action, 
+    			categoryId: itemId
+    		});
+    		
+    		resolve({
+    			stats: stats,
+    			eventItems: eventItems
+    		});
+    	}
+    });
+}
+
+function statFile(filepath) {
+	return new Promise((resolve, reject) => {
+		fs.stat(filepath, (err, stats) => {
+			if(err) {
+				reject(err);
+			}
+			else {
+				resolve(stats);
+			}
+		});
+    });
+}
+
+function padStart(src) {
+	src += '';
+    var targetLength = 2;
+    var padString = '0';
+    if (src.length > targetLength) {
+        return src;
+    }
+    else {
+        targetLength = targetLength-src.length;
+        if (targetLength > padString.length) {
+            padString += padString.repeat(targetLength/padString.length);
+        }
+        return padString.slice(0,targetLength) + src;
+    }
+}
+
 function addSource(entryId, url) {
+	var detectedObjects = {};
+	var lastDetections;
+	var inMotion = 0;
+	
 	var source = new motion.Source({
 		systemName: entryId, 
 		sourceURL: url, 
 		ffmpegPath: 'ffmpeg', 
 		ffprobePath: 'ffprobe'
-	}).on('record-start', (diff) => {
-		console.log(`---  Motion start [${entryId}]`);
+	}).on('record-start', (filepath) => {
+		
+		inMotion++;
+		console.log(`Motion start [${entryId}]`);
+		onEntryEvent(entryId, 'motion-start');
+		
     }).on('record-stop', (filepath) => {
-		console.log(`---  Motion end [${entryId}]`);
+
+    	inMotion--;
+    	statFile(filepath)
+    	.then((stats) => processMotion(stats, source.categoryId, detectedObjects, lastDetections))
+    	.then(({stats, eventItems}) => {
+    		
+    		for(var i = 0; i < eventItems.length; i++) {
+    			createEntry(filepath, stats, eventItems[i].name, eventItems[i].categoryId)
+    			.then(({entry, categoryId}) => {
+    				var item = items[categoryId];
+    				var d = new Date(entry.createdAt * 1000);
+    				var time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
+
+    				onEntryEvent(entryId, 'new-event', {
+    					action: entry.name,
+    					name: item.name,
+    					time: time
+    				});
+    			});
+    		}
+    		
+    	});
+    	
+		console.log(`Motion end [${entryId}]`);
+		detectedObjects = {};
+		demo = 0; // TODO remove
+		onEntryEvent(entryId, 'motion-end');
+		
+    }).on('capture', (filepath) => {
+    	
+    	if(!inMotion) {
+    		return;
+    	}
+    	
+    	var detections = detect(filepath);
+    	demo++; // TODO remove
+    	lastDetections = {};
+    	for(var i = 0; i < detections.length; i++) {
+    		var detection = detections[i];
+        	if(items[detection.itemId]) {
+        		console.log(`Object detected [${entryId}]`, detection);
+        		
+        		lastDetections[detection.itemId] = true;
+        		
+        		if(!detectedObjects[detection.itemId]) {
+        			detectedObjects[detection.itemId] = [detection];
+        		}
+        		else {
+        			var lastDetection = detectedObjects[detection.itemId][detectedObjects[detection.itemId].length - 1];
+        			if(isDifferent(lastDetection, detection)) {
+        	    		detectedObjects[detection.itemId].push(detection);
+        			}
+        		}
+        	}
+    	}
+    	
     });
 	
 	source.keepSegmentsCount = 1;
-	source.threshold = 30;
+	source.threshold = 25;
 
 	detectServer.addSource(source);
-	source.start();
+	
+
+    var categoryEntryFilter = new kaltura.objects.CategoryEntryFilter({
+    	entryIdEqual: entryId
+    });
+
+    kaltura.services.categoryEntry.listAction(categoryEntryFilter)
+    .completion((success, response) => {
+        if(success) {
+        	source.categoryId = response.objects[0].categoryId;
+        	source.start();
+        }
+        else {
+            console.error(response);
+        }
+    })
+    .execute(client);
 }
 
 function updateLiveStreams(entries) {
@@ -253,7 +525,6 @@ function updateLiveStreams(entries) {
 	}
 }
 
-var lastUpdate = 0;
 function reloadLiveStreams() {
 
     var liveStreamsFilter = new kaltura.objects.LiveStreamEntryFilter({
@@ -269,14 +540,38 @@ function reloadLiveStreams() {
         else {
             reject(response);
         }
-        setTimeout(reloadLiveStreams, 10000);
+        setTimeout(reloadLiveStreams, 8000);
+    })
+    .execute(client);
+}
+
+function initLiveStreams() {
+
+	reloadLiveStreams();
+
+	var itemsFilter = new kaltura.objects.CategoryFilter({
+		fullNameStartsWith: "Market>",
+		tagsLike: "item"
+	});
+	
+    kaltura.services.category.listAction(itemsFilter)
+    .completion((success, response) => {
+        if(success) {
+        	for(var i = 0; i < response.objects.length; i++) {
+        		var item = response.objects[i];
+        		items[item.id] = item;
+        	}
+        }
+        else {
+            console.error(response);
+        }
     })
     .execute(client);
 }
 
 startWidgetSession()
 .then((widgetSession) => startSession(widgetSession))
-.then(() => reloadLiveStreams())
+.then(() => initLiveStreams())
 .catch((err) => {
 	console.error(err);
 	process.exit(-1);
