@@ -157,6 +157,16 @@ a {
     width: 30%;
     padding: 0 8px;
 }
+.col-3 {
+    float: left;
+    width: 20%;
+    padding: 0 8px;
+}
+.col-9 {
+    float: left;
+    width: 80%;
+    padding: 0 8px;
+}
 .camera-container .kWidgetIframeContainer {
     width: 100% !important;
     height: 100% !important;
@@ -313,4 +323,15 @@ a {
 
 .alert {
 	border: 5px #d81b60 solid;
+}
+.category-items {
+    padding: 16px;
+    height: calc(70vh - 60px);
+    overflow-y: auto;
+}
+.category-item {
+    margin-bottom: 36px;
+}
+.category-item .product {
+    margin-bottom: 16px !important;
 }

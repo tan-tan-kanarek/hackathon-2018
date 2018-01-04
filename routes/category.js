@@ -138,7 +138,8 @@ function getMetadata(session, parentId) {
             if(success) {
             	var items = response[0].objects;
             	for(var i = 0; i < items.length; i++) {
-            		items[i].lanes = getLanes(items[i].relatedObjects.events.objects);
+					items[i].lanes = getLanes(items[i].relatedObjects.events.objects);
+					items[i].index = i;
             	}
             	
                 resolve({
