@@ -277,75 +277,14 @@ function createEntry(filepath, stats, action, categoryId, liveStreamId) {
 	});
 }
 
-var demo = 0; // TODO remove
 function detect(filepath) {
 
 	return new Promise((resolve, reject) => {
 		
-    	/*
-    	TODO run YOLO
-
 		let cmd = `${yolo} detector test ${yoloData} ${yoloConfig} ${yoloWeights} ${filepath}`;
 		cmd.exec((stdout, stderr) => {
 			resolve(JSON.parse(stdout));
 		});
-		*/
-		
-    	switch(demo) {
-    		case 0:
-    			resolve([{
-    				itemId: 83635861,
-    				x: 30,
-    				y: 40,
-    				width: 300,
-    				height: 60
-    			}]);
-    
-    		case 1:
-    			resolve([{
-    				itemId: 83635861,
-    				x: 60,
-    				y: 10,
-    				width: 300,
-    				height: 60
-    			}]);
-    			
-    		case 2:
-    			resolve([{
-    				itemId: 83604851,
-    				x: 30,
-    				y: 40,
-    				width: 300,
-    				height: 60
-    			}]);
-    			
-    		case 3:
-    			resolve([{
-    				itemId: 83623341,
-    				x: 30,
-    				y: 40,
-    				width: 300,
-    				height: 60
-    			}]);
-    			
-    		case 4:
-    			resolve([{
-    				itemId: 83623341,
-    				x: 40,
-    				y: 100,
-    				width: 300,
-    				height: 60
-    			}]);
-    			
-    		default:
-    			resolve([{
-    				itemId: 83623341,
-    				x: 40,
-    				y: 100,
-    				width: 300,
-    				height: 60
-    			}]);
-    	}
     });
 }
 
@@ -469,8 +408,6 @@ function addSource(entryId, url) {
     	})
     	.catch((err) => console.error(err));
 
-		demo = 0; // TODO remove
-		
 		console.log(`Motion end [${entryId}]`);
 		var d = new Date();
 		var time = padStart(d.getHours()) + ":" + padStart(d.getMinutes());
@@ -507,8 +444,6 @@ function addSource(entryId, url) {
             	}
         	}
     	});
-    	demo++; // TODO remove
-    	
     });
 	
 	source.keepSegmentsCount = 1;

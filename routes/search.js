@@ -18,9 +18,6 @@ router.post("/", function(req, res, next) {
 	var filepath = searchPath + uniqid() + '.jpg';
 	fs.writeFile(filepath, buffer, (err) => {
 
-    	/*
-    	TODO run YOLO
-
 		let cmd = `${yolo} detector test ${yoloData} ${yoloConfig} ${yoloWeights} ${filepath}`;
 		cmd.exec((stdout, stderr) => {
 			var detections = JSON.parse(stdout);
@@ -32,11 +29,6 @@ router.post("/", function(req, res, next) {
     			res.send(false);
     		}
 		});
-		
-		*/
-		
-		res.send("83713751");
-//		res.send(false);
 	});
 });
 
