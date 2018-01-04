@@ -236,6 +236,7 @@ a {
     bottom: 0; left: 0;
     background-color: #111;
     width: 100%;
+    max-height: 224px;
     position: fixed;
     white-space: nowrap;
     overflow-x: auto;
