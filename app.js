@@ -571,7 +571,7 @@ function reloadLiveStreams() {
         	updateLiveStreams(response.objects);
         }
         else {
-            reject(response);
+            console.error(response);
         }
         setTimeout(reloadLiveStreams, 8000);
     })
